@@ -1,4 +1,4 @@
-package com.weather;
+package com.mrshm.weather;
 
 import com.facebook.react.ReactActivity;
 

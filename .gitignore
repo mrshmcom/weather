@@ -57,3 +57,10 @@ buck-out/
 
 # CocoaPods
 /ios/Pods/
+
+
+# Configs
+google-services.json
+firebaseConfig.json
+gradle.properties
+.env
