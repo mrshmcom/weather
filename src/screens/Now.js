@@ -5,9 +5,11 @@ import {
   Text,
   View,
   ActivityIndicator,
+  Dimensions,
 } from 'react-native';
 import Moment from 'moment';
 import {useDispatch, useSelector} from 'react-redux';
+import {LineChart} from 'react-native-chart-kit';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
@@ -93,7 +95,6 @@ export default () => {
           flex: 1,
           alignItems: 'center',
           paddingTop: 30,
-          paddingBottom: 30,
         }}>
         <View
           style={{
@@ -113,11 +114,20 @@ export default () => {
               {geoState.name}
             </Text>
           </View>
-          <Text style={{color: 'white', textAlign: 'center'}}>
-            {Moment(forecastState.current.dt, 'X').format(
-              'ddd, MMM Do, h:mm a',
-            )}
-          </Text>
+          <View style={{flexDirection: 'row', alignItems: 'center'}}>
+            <Ionicons name="ios-time-outline" size={16} color="white" />
+            <Text
+              style={{
+                color: 'white',
+                textAlign: 'center',
+                marginLeft: 5,
+                direction: 'ltr',
+              }}>
+              {Moment(forecastState.current.dt, 'X').format(
+                'ddd, MMM Do, h:mm a',
+              )}
+            </Text>
+          </View>
         </View>
         <View
           style={{
@@ -380,61 +390,67 @@ export default () => {
         {forecastState.minutely ? (
           <View
             style={{
-              marginTop: 50,
-              marginBottom: 20,
-              height: 100,
-              flexDirection: 'row',
-              width: '100%',
-              justifyContent: 'flex-start',
-              alignItems: 'flex-end',
+              marginVertical: 30,
+              paddingBottom: 10,
+              paddingHorizontal: 0,
+              backgroundColor: '#fff',
+              borderRadius: 10,
+              justifyContent: 'center',
+              alignItems: 'center',
             }}>
-            {forecastState.minutely.map((minute, index) => {
-              return (
-                <View
-                  key={minute}
-                  style={{
-                    height: '100%',
-                    width: `${100 / forecastState.minutely.length}%`,
-                    justifyContent: 'flex-end',
-                  }}>
-                  {index % 2 === 0 ? (
-                    <Text
-                      style={{
-                        fontSize: 5,
-                        color: 'white',
-                        marginBottom: 5,
-                        transform: [{rotate: '-90deg'}],
-                      }}>
-                      {Math.round(minute.precipitation)}
-                    </Text>
-                  ) : null}
-                  <View
-                    style={{
-                      width: `100%`,
-                      height: minute.precipitation * 10,
-                      backgroundColor: 'rgba(255,255,255,0.1)',
-                      borderTopWidth: 1,
-                      borderTopColor: 'rgba(255,255,255,0.2)',
-                      borderBottomWidth: 1,
-                      borderBottomColor: 'rgba(255,255,255,0.2)',
-                    }}
-                  />
-                  <View style={{height: 30}}>
-                    {index % 2 === 0 ? (
-                      <Text
-                        style={{
-                          fontSize: 5,
-                          color: 'white',
-                          marginTop: 5,
-                          transform: [{rotate: '-90deg'}],
-                        }}>
-                        {Moment(minute.dt, 'X').format('m')}
-                      </Text>
-                    ) : null}
-                  </View>
-                </View>
-              );
-            })}
+            <Text
+              style={{
+                color: '#5b97ff',
+                marginVertical: 10,
+                fontWeight: 'bold',
+              }}>
+              Precipitation Volume
+            </Text>
+            <LineChart
+              bezier
+              data={{
+                labels: forecastState.minutely.map((minute, index) => {
+                  return index % 5 === 0
+                    ? Moment(minute.dt, 'X').format('hh:mm')
+                    : '';
+                }),
+                datasets: [
+                  {
+                    data: forecastState.minutely.map((minute, index) => {
+                      return minute.precipitation;
+                    }),
+                  },
+                ],
+              }}
+              width={Dimensions.get('window').width - 20} // from react-native
+              height={220}
+              // yAxisLabel="prep"
+              yAxisSuffix="mm"
+              yAxisInterval={5} // optional, defaults to 1
+              // xAxisLabel=""
+              verticalLabelRotation={-90}
+              horizontalLabelRotation={0}
+              fromZero={false}
+              xLabelsOffset={15}
+              chartConfig={{
+                backgroundColor: '#fff',
+                backgroundGradientFrom: '#fff',
+                backgroundGradientFromOpacity: 1,
+                backgroundGradientTo: '#fff',
+                backgroundGradientToOpacity: 1,
+                decimalPlaces: 2, // optional, defaults to 2dp
+                color: (opacity = 1) => `rgba(91, 151, 255, ${opacity})`,
+                labelColor: (opacity = 1) => `rgba(91, 151, 255, ${opacity})`,
+                style: {
+                  borderRadius: 16,
+                },
+                propsForDots: {
+                  r: '2',
+                  strokeWidth: '0',
+                  stroke: '#5b97ff',
+                },
+              }}
+            />
           </View>
         ) : null}
       </View>

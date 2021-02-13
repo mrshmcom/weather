@@ -206,6 +206,8 @@ dependencies {
 
     implementation 'com.google.firebase:firebase-analytics:17.3.0'
 
+    implementation project(':react-native-svg')
+
     debugImplementation("com.facebook.flipper:flipper:${FLIPPER_VERSION}") {
       exclude group:'com.facebook.fbjni'
     }
