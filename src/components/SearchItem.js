@@ -1,4 +1,5 @@
-import React, {useState} from 'react';
+import 'react-native-gesture-handler';
+import React, {useEffect, useState} from 'react';
 import {TouchableOpacity, View, Keyboard} from 'react-native';
 import {List} from 'react-native-paper';
 import {useDispatch, useSelector} from 'react-redux';
@@ -25,6 +26,37 @@ export default (props) => {
 
   const [stared, setStared] = useState(false);
 
+  const checkStar = async () => {
+    const bookmark = JSON.parse(await AsyncStorage.getItem('bookmark'));
+    if (bookmark) {
+      const filterBook = bookmark.filter(
+        (x) => x.place_name === item.place_name,
+      );
+
+      if (filterBook.length > 0) {
+        setStared(true);
+      } else {
+        setStared(false);
+      }
+    } else {
+      setStared(false);
+      await AsyncStorage.setItem('bookmark', JSON.stringify([]));
+    }
+  };
+
+  const Bookmark = async () => {
+    setStared(!stared);
+    const bookmark = JSON.parse(await AsyncStorage.getItem('bookmark'));
+
+    bookmark.push(item);
+
+    await AsyncStorage.setItem('bookmark', JSON.stringify(bookmark));
+  };
+
+  useEffect(() => {
+    checkStar();
+  }, [item]);
+
   return (
     <List.Item
       style={{
@@ -36,7 +68,7 @@ export default (props) => {
         Keyboard.dismiss();
         searchInput.current.blur();
         // searchInput.current.clear();
-        setSearchField(item.text);
+        setSearchField('');
         setSearchResult([]);
         const settingData = {
           ...settingRedux,
@@ -79,7 +111,7 @@ export default (props) => {
       right={() => (
         <TouchableOpacity
           onPress={() => {
-            setStared(!stared);
+            Bookmark();
           }}
           style={{
             justifyContent: 'center',
