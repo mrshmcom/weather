@@ -108,7 +108,7 @@ export default function Hourly() {
             <Text style={{fontSize: 20, fontWeight: 'bold', color: 'white'}}>
               No Data!
             </Text>
-            <Text style={{color: 'white'}}>Pill down to refresh.</Text>
+            <Text style={{color: 'white'}}>Pull down to refresh.</Text>
           </View>
         }
       />

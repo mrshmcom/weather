@@ -6,9 +6,11 @@ import {
   View,
   ActivityIndicator,
   Dimensions,
+  TouchableOpacity,
 } from 'react-native';
 import Moment from 'moment';
 import {useDispatch, useSelector} from 'react-redux';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import {LineChart} from 'react-native-chart-kit';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -28,13 +30,16 @@ export default () => {
 
   const forecastRedux = useSelector((state) => state.ForecastReducer.forecast);
   const geoLocationRedux = useSelector((state) => state.LocationReducer.geo);
+  const LocationRedux = useSelector((state) => state.LocationReducer.location);
   const SettingRedux = useSelector((state) => state.SettingReducer.setting);
 
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [geoState, setGeoState] = useState({});
+  const [locationState, setLocationState] = useState({});
   const [forecastState, setForecastState] = useState({});
   const [settingState, setSettingState] = useState({});
+  const [stared, setStared] = useState(false);
 
   const Sync = async () => {
     try {
@@ -48,6 +53,7 @@ export default () => {
         locationLoad,
       );
       dispatch(SetGeo(geoLocationLoad));
+      setLocationState(locationLoad);
 
       const forecastFunction = await Forecast.Sync(locationLoad);
       dispatch(SetForecast(forecastFunction));
@@ -59,15 +65,60 @@ export default () => {
     }
   };
 
+  const checkStar = async () => {
+    const bookmark = JSON.parse(await AsyncStorage.getItem('bookmark'));
+    if (bookmark) {
+      const filterBook = bookmark.filter(
+        (x) => x.place_name === geoLocationRedux.name,
+      );
+
+      if (filterBook.length > 0) {
+        setStared(true);
+      } else {
+        setStared(false);
+      }
+    } else {
+      setStared(false);
+      await AsyncStorage.setItem('bookmark', JSON.stringify([]));
+    }
+  };
+
+  const Bookmark = async () => {
+    setStared(true);
+    const bookmark = JSON.parse(await AsyncStorage.getItem('bookmark'));
+
+    bookmark.push({
+      center: [locationState.longitude, locationState.latitude],
+      place_name: geoState.name,
+      text: geoState.name,
+    });
+
+    await AsyncStorage.setItem('bookmark', JSON.stringify(bookmark));
+  };
+
+  const UnBookmark = async () => {
+    setStared(false);
+    const bookmark = JSON.parse(await AsyncStorage.getItem('bookmark'));
+
+    const filterBook = bookmark.filter((x) => x.place_name !== geoState.name);
+
+    await AsyncStorage.setItem('bookmark', JSON.stringify(filterBook));
+  };
+
   useEffect(() => {
     setLoading(true);
 
     setForecastState(forecastRedux);
+    setLocationState(LocationRedux);
     setGeoState(geoLocationRedux);
     setSettingState(SettingRedux);
 
     setLoading(false);
   }, [forecastRedux, SettingRedux, geoLocationRedux]);
+
+  useEffect(() => {
+    checkStar();
+  }, [geoLocationRedux]);
 
   return loading ? (
     <View
@@ -108,11 +159,38 @@ export default () => {
               style={{
                 color: 'white',
                 textAlign: 'center',
-                marginLeft: 5,
+                marginHorizontal: 5,
                 direction: 'ltr',
               }}>
               {geoState.name}
             </Text>
+            <View>
+              {stared ? (
+                <TouchableOpacity
+                  onPress={() => {
+                    UnBookmark();
+                  }}
+                  style={{
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    width: 30,
+                  }}>
+                  <Ionicons name="star" size={20} color="gold" />
+                </TouchableOpacity>
+              ) : (
+                <TouchableOpacity
+                  onPress={() => {
+                    Bookmark();
+                  }}
+                  style={{
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    width: 30,
+                  }}>
+                  <Ionicons name="star-outline" size={20} color="gold" />
+                </TouchableOpacity>
+              )}
+            </View>
           </View>
           <View style={{flexDirection: 'row', alignItems: 'center'}}>
             <Ionicons name="ios-time-outline" size={16} color="white" />
@@ -411,7 +489,7 @@ export default () => {
               data={{
                 labels: forecastState.minutely.map((minute, index) => {
                   return index % 5 === 0
-                    ? Moment(minute.dt, 'X').format('hh:mm')
+                    ? Moment(minute.dt, 'X').format('HH:mm')
                     : '';
                 }),
                 datasets: [

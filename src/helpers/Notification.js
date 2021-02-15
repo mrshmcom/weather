@@ -11,18 +11,24 @@ class Notification {
 
       // (required) Called when a remote is received or opened, or local notification is opened
       onNotification: function (notification) {
-        console.log('NOTIFICATION:', notification);
+        console.log('NOTIFICATION onNotification:', notification);
+        console.log('ACTION onNotification:', notification.action);
+
+        if (notification.action === 'OK') {
+          console.log('NOTIFICATION ACTION OK!!! onNotification');
+        }
+
         Notification.local(notification);
         // process the notification
       },
 
       // (optional) Called when Registered Action is pressed and invokeApp is false, if true onNotification will be called (Android)
       onAction: function (notification) {
-        console.log('ACTION:', notification.action);
-        console.log('NOTIFICATION:', notification);
+        console.log('NOTIFICATION onAction:', notification);
+        console.log('ACTION onAction:', notification.action);
 
         if (notification.action === 'OK') {
-          console.log('OOOOOOOOOOOOOOOOKKKKKKKKKKKKKKKKKKKKK');
+          console.log('NOTIFICATION ACTION OK!!! onAction');
         }
 
         // process the action
@@ -115,7 +121,7 @@ class Notification {
       // tag: 'some_tag', // (optional) add tag to message
       // group: 'group', // (optional) add group to message
       // groupSummary: false, // (optional) set this notification to be the group summary for a group of notifications, default: false
-      // ongoing: false, // (optional) set whether this is an "ongoing" notification
+      ongoing: data.ongoing ? data.ongoing : false, // (optional) set whether this is an "ongoing" notification
       // priority: 'high', // (optional) set notification priority, default: high
       visibility: data.visibility ? data.visibility : 'private', // (optional) set notification visibility, default: private
       // ignoreInForeground: false, // (optional) if true, the notification will not be visible when the app is in the foreground (useful for parity with how iOS notifications appear). should be used in combine with `com.dieam.reactnativepushnotification.notification_foreground` setting
@@ -148,11 +154,13 @@ class Notification {
   }
 
   static local(data) {
+    console.log('NOTIFICATION:', data);
     this.channel(data.channelId ? data.channelId : 'Weather');
     PushNotification.localNotification(this.notifData(data));
   }
 
   static schedule(data) {
+    console.log('NOTIFICATION:', data);
     this.channel(data.channelId ? data.channelId : 'Weather');
     PushNotification.localNotificationSchedule({
       ...this.notifData(data),

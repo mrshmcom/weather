@@ -19,7 +19,7 @@ import ForecastReducer from './src/store/reducer/Forecast';
 import LocationReducer from './src/store/reducer/Location';
 import SettingReducer from './src/store/reducer/Setting';
 
-Axios.defaults.timeout = 5000;
+Axios.defaults.timeout = 10000;
 
 const App: () => React$Node = () => {
   return (

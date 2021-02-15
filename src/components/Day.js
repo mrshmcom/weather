@@ -74,10 +74,10 @@ export default (props) => {
               alignItems: 'flex-end',
               width: '35%',
             }}>
-            <Text style={{color: 'white'}}>
+            <Text style={{color: 'lightpink'}}>
               {Math.round(data.temp.max) + Unit.sign(setting.unit)}
             </Text>
-            <Text style={{color: 'white'}}>
+            <Text style={{color: 'aqua'}}>
               {Math.round(data.temp.min) + Unit.sign(setting.unit)}
             </Text>
           </View>

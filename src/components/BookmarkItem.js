@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import {TouchableOpacity, View, Keyboard} from 'react-native';
+import {ActivityIndicator, Text, TouchableOpacity, View} from 'react-native';
 import {List} from 'react-native-paper';
 import {useDispatch, useSelector} from 'react-redux';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -12,18 +12,12 @@ import {SetLocation, SetGeo} from '../store/action/Location';
 import {SetForecast} from '../store/action/Forecast';
 
 export default (props) => {
-  const {
-    item,
-    setSearchField,
-    setSearchResult,
-    setSearchLoading,
-    searchInput,
-  } = props;
+  const {item, LoadLocations, navigation} = props;
   const dispatch = useDispatch();
 
-  const settingRedux = useSelector((state) => state.SettingReducer.setting);
+  const [refreshing, setRefreshing] = useState(false);
 
-  const [stared, setStared] = useState(false);
+  const settingRedux = useSelector((state) => state.SettingReducer.setting);
 
   const checkStar = async () => {
     const bookmark = JSON.parse(await AsyncStorage.getItem('bookmark'));
@@ -33,51 +27,48 @@ export default (props) => {
       );
 
       if (filterBook.length > 0) {
-        setStared(true);
       } else {
-        setStared(false);
       }
     } else {
-      setStared(false);
       await AsyncStorage.setItem('bookmark', JSON.stringify([]));
     }
   };
 
-  const Bookmark = async () => {
-    setStared(true);
-    const bookmark = JSON.parse(await AsyncStorage.getItem('bookmark'));
+  const Delete = async () => {
+    let bookmark = JSON.parse(await AsyncStorage.getItem('bookmark'));
 
-    bookmark.push(item);
+    bookmark = bookmark.filter((x) => x.place_name !== item.place_name);
 
     await AsyncStorage.setItem('bookmark', JSON.stringify(bookmark));
-  };
 
-  const UnBookmark = async () => {
-    setStared(false);
-    const bookmark = JSON.parse(await AsyncStorage.getItem('bookmark'));
-
-    const filterBook = bookmark.filter((x) => x.place_name !== item.place_name);
-
-    await AsyncStorage.setItem('bookmark', JSON.stringify(filterBook));
+    LoadLocations();
   };
 
   useEffect(() => {
     checkStar();
   }, [item]);
 
-  return (
+  return refreshing ? (
+    <View
+      style={{
+        borderTopWidth: 1,
+        borderTopColor: '#eeeeee',
+        justifyContent: 'center',
+        alignItems: 'center',
+        flexDirection: 'row',
+        paddingVertical: 20,
+      }}>
+      <ActivityIndicator size="small" color="black" style={{marginEnd: 10}} />
+      <Text>Loading Data...</Text>
+    </View>
+  ) : (
     <List.Item
       style={{
         borderTopWidth: 1,
         borderTopColor: '#eeeeee',
       }}
       onPress={async () => {
-        setSearchLoading(true);
-        Keyboard.dismiss();
-        searchInput.current.blur();
-        // searchInput.current.clear();
-        setSearchField('');
-        setSearchResult([]);
+        setRefreshing(true);
         const settingData = {
           ...settingRedux,
           current: false,
@@ -102,7 +93,8 @@ export default (props) => {
         const forecastFunction = await ForecastHelper.Sync(locationData);
         dispatch(SetForecast(forecastFunction));
 
-        setSearchLoading(false);
+        setRefreshing(false);
+        navigation.navigate('Weather');
       }}
       title={item.text}
       description={item.place_name}
@@ -116,33 +108,19 @@ export default (props) => {
           <Ionicons name="ios-location-sharp" size={20} color="gray" />
         </View>
       )}
-      right={() =>
-        stared ? (
-          <TouchableOpacity
-            onPress={() => {
-              UnBookmark();
-            }}
-            style={{
-              justifyContent: 'center',
-              alignItems: 'center',
-              width: 30,
-            }}>
-            <Ionicons name="star" size={20} color="gold" />
-          </TouchableOpacity>
-        ) : (
-          <TouchableOpacity
-            onPress={() => {
-              Bookmark();
-            }}
-            style={{
-              justifyContent: 'center',
-              alignItems: 'center',
-              width: 30,
-            }}>
-            <Ionicons name="star-outline" size={20} color="gray" />
-          </TouchableOpacity>
-        )
-      }
+      right={() => (
+        <TouchableOpacity
+          onPress={() => {
+            Delete();
+          }}
+          style={{
+            justifyContent: 'center',
+            alignItems: 'center',
+            width: 30,
+          }}>
+          <Ionicons name="ios-trash" size={20} color="red" />
+        </TouchableOpacity>
+      )}
     />
   );
 };

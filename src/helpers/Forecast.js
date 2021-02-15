@@ -76,8 +76,11 @@ class Forecast {
           largeIconUrl: `http://openweathermap.org/img/wn/${forecast.data.current.weather[0].icon}@4x.png`,
           vibrate: false,
           playSound: false,
-          data: new Date(Date.now() + 2 * 60 * 60 * 1000),
+          data: new Date(Date.now() + 2 * 3600 * 1000),
           allowWhileIdle: true,
+          // ongoing: true,
+          invokeApp: false,
+          // actions: ['Setting', 'OK'],
         });
 
         return forecast.data;
