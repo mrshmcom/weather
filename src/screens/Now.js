@@ -175,7 +175,7 @@ export default () => {
                     alignItems: 'center',
                     width: 30,
                   }}>
-                  <Ionicons name="star" size={20} color="gold" />
+                  <Ionicons name="star" size={16} color="gold" />
                 </TouchableOpacity>
               ) : (
                 <TouchableOpacity
@@ -187,7 +187,7 @@ export default () => {
                     alignItems: 'center',
                     width: 30,
                   }}>
-                  <Ionicons name="star-outline" size={20} color="gold" />
+                  <Ionicons name="star-outline" size={16} color="gold" />
                 </TouchableOpacity>
               )}
             </View>
