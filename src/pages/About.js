@@ -78,14 +78,14 @@ export default (props) => {
             </TouchableOpacity>
           </View>
         </View>
-        <View style={{marginHorizontal: 20}}>
-          <Text style={{fontWeight: 'bold'}}>Copyrights:</Text>
+        <View style={{marginHorizontal: 20, marginVertical: 20}}>
+          <Text style={{fontWeight: 'bold'}}>Copyrights</Text>
           <View style={{marginVertical: 10}}>
             <View style={{flexDirection: 'row', alignItems: 'center'}}>
               <Text style={{width: 30}}>
                 <Ionicons name="ios-sunny" size={16} color="black" />
               </Text>
-              <Text style={{fontWeight: 'bold'}}>Forecast: </Text>
+              <Text>Forecast</Text>
             </View>
             <View style={{flexDirection: 'row', alignItems: 'center'}}>
               <View style={{width: 30}} />
@@ -100,7 +100,7 @@ export default (props) => {
               <Text style={{width: 30}}>
                 <Ionicons name="ios-location-sharp" size={16} color="black" />
               </Text>
-              <Text style={{fontWeight: 'bold'}}>Geo Location: </Text>
+              <Text>Geo Location</Text>
             </View>
             <View style={{flexDirection: 'row', alignItems: 'center'}}>
               <View style={{width: 30}} />
@@ -119,7 +119,7 @@ export default (props) => {
               <Text style={{width: 30}}>
                 <Ionicons name="ios-map" size={16} color="black" />
               </Text>
-              <Text style={{fontWeight: 'bold'}}>Map: </Text>
+              <Text>Map</Text>
             </View>
             <View style={{flexDirection: 'row', alignItems: 'center'}}>
               <View style={{width: 30}} />
