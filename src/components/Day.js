@@ -65,7 +65,7 @@ export default (props) => {
               flexDirection: 'row',
             }}>
             {data.weather.map((element, index) => {
-              return <Icon type={element.icon} size={50} />;
+              return <Icon type={element.icon} size={50} key={index} />;
             })}
           </View>
           <View
