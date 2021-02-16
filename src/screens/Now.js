@@ -114,7 +114,7 @@ export default () => {
     setSettingState(SettingRedux);
 
     setLoading(false);
-  }, [forecastRedux, SettingRedux, geoLocationRedux]);
+  }, [forecastRedux, SettingRedux, geoLocationRedux, LocationRedux]);
 
   useEffect(() => {
     checkStar();

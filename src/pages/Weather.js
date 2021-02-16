@@ -19,6 +19,7 @@ import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import Now from '../screens/Now';
 import Daily from '../screens/Daily';
 import Hourly from '../screens/Hourly';
+import Map from '../screens/Map';
 
 import SearchItem from '../components/SearchItem';
 import Loading from '../components/Loading';
@@ -280,6 +281,7 @@ export default (props) => {
           component={Daily}
           options={{tabBarLabel: 'Daily'}}
         />
+        <Tab.Screen name="Map" component={Map} options={{tabBarLabel: 'Map'}} />
       </Tab.Navigator>
       {searchResult.length > 0 ? (
         <View

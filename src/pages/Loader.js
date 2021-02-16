@@ -24,7 +24,8 @@ import {setSetting} from '../store/action/Setting';
 
 const Drawer = createDrawerNavigator();
 
-export default () => {
+export default (prop) => {
+  const {style} = prop;
   const dispatch = useDispatch();
   const dimensions = useWindowDimensions();
   const isLargeScreen = dimensions.width >= 768;
@@ -71,7 +72,7 @@ export default () => {
   }, []);
 
   return (
-    <View style={{flex: 1}}>
+    <View style={[style, {flex: 1}]}>
       {loading ? (
         <Loading />
       ) : (

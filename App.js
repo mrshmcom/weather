@@ -33,7 +33,12 @@ const App: () => React$Node = () => {
         applyMiddleware(thunk),
       )}>
       <StatusBar barStyle="default" backgroundColor="#5b97ff" />
-      <Loader />
+      <Loader
+        style={{
+          backgroundColor: '#5b97ff',
+          // paddingTop: StatusBar.currentHeight,
+        }}
+      />
     </Provider>
   );
 };
