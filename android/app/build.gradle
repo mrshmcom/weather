@@ -137,8 +137,8 @@ android {
         applicationId "com.mrshm.weather"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 203
-        versionName "0.2.3"
+        versionCode 204
+        versionName "0.2.4"
         multiDexEnabled true
     }
     splits {
