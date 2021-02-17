@@ -9,80 +9,48 @@ import {
   TouchableOpacity,
   Picker,
   ScrollView,
+  Platform,
 } from 'react-native';
-import {useSelector} from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import MapView, {
+  Marker,
+  UrlTile,
+  AnimatedRegion,
+  Animated,
+  PROVIDER_GOOGLE,
+} from 'react-native-maps';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 
-import {OPEN_WEATHER_API_KEY, THUNDER_FOREST_API_KEY} from '@env';
+import LocationHelper from '../helpers/Location';
+import ForecastHelper from '../helpers/Forecast';
+
+import {setSetting} from '../store/action/Setting';
+import {SetLocation, SetGeo} from '../store/action/Location';
+import {SetForecast} from '../store/action/Forecast';
+
+import legends from '../constants/legends.json';
+
+import {OPEN_WEATHER_API_KEY} from '@env';
 
 export default function Map() {
-  const LocationRedux = useSelector((state) => state.LocationReducer.location);
+  const dispatch = useDispatch();
 
+  const settingRedux = useSelector((state) => state.SettingReducer.setting);
+  const LocationRedux = useSelector((state) => state.LocationReducer.location);
+  const GeoLocationRedux = useSelector((state) => state.LocationReducer.geo);
+
+  const [latitude, setLatitude] = useState(0);
+  const [longitude, setLongitude] = useState(0);
   const [mapTypeState, setMapTypeState] = useState('temp_new');
   const [loading, setLoading] = useState(true);
-  const [ZOOM, setZOOM] = useState(5);
-
-  const scrollV = useRef(null);
-  const scrollH = useRef(null);
-
-  const Tile = (props) => {
-    const {tileX, tileY, type} = props;
-    return (
-      <ImageBackground
-        style={{width: 256, height: 256, backgroundColor: 'white'}}
-        source={{
-          uri: tileMaker(
-            lon2tile(LocationRedux.longitude, ZOOM) + tileX,
-            lat2tile(LocationRedux.latitude, ZOOM) + tileY,
-            ZOOM,
-          ).map,
-        }}>
-        <Image
-          style={{width: 256, height: 256}}
-          source={{
-            uri: tileMaker(
-              lon2tile(LocationRedux.longitude, ZOOM) + tileX,
-              lat2tile(LocationRedux.latitude, ZOOM) + tileY,
-              ZOOM,
-            )[type],
-          }}
-        />
-      </ImageBackground>
-    );
-  };
-
-  const lon2tile = (lon, zoom) => {
-    return Math.floor(((lon + 180) / 360) * Math.pow(2, zoom));
-  };
-
-  const lat2tile = (lat, zoom) => {
-    return Math.floor(
-      ((1 -
-        Math.log(
-          Math.tan((lat * Math.PI) / 180) + 1 / Math.cos((lat * Math.PI) / 180),
-        ) /
-          Math.PI) /
-        2) *
-        Math.pow(2, zoom),
-    );
-  };
-
-  const tileMaker = (x, y, z) => {
-    return {
-      map: `http://a.tile.thunderforest.com/atlas/${z}/${x}/${y}.png?apikey=${THUNDER_FOREST_API_KEY}`,
-      clouds_new: `https://tile.openweathermap.org/map/clouds_new/${z}/${x}/${y}.png?appid=${OPEN_WEATHER_API_KEY}`,
-      precipitation_new: `https://tile.openweathermap.org/map/precipitation_new/${z}/${x}/${y}.png?appid=${OPEN_WEATHER_API_KEY}`,
-      pressure_new: `https://tile.openweathermap.org/map/pressure_new/${z}/${x}/${y}.png?appid=${OPEN_WEATHER_API_KEY}`,
-      wind_new: `https://tile.openweathermap.org/map/wind_new/${z}/${x}/${y}.png?appid=${OPEN_WEATHER_API_KEY}`,
-      temp_new: `https://tile.openweathermap.org/map/temp_new/${z}/${x}/${y}.png?appid=${OPEN_WEATHER_API_KEY}`,
-    };
-  };
+  const [ZOOM, setZOOM] = useState(1);
 
   useEffect(() => {
     setLoading(true);
 
-    // scrollH.current.scrollTo({x: 0, y: 0, animated: true});
-    // scrollV.current.scrollToEnd();
+    setLatitude(LocationRedux.latitude);
+    setLongitude(LocationRedux.longitude);
 
     setLoading(false);
   }, [LocationRedux]);
@@ -106,41 +74,71 @@ export default function Map() {
         alignItems: 'center',
         backgroundColor: '#5b97ff',
       }}>
-      <FlatList
-        horizontal={true}
-        data={[0]}
-        renderItem={(x) => {
-          return (
-            <FlatList
-              data={[0]}
-              renderItem={(y) => {
-                return (
-                  <View
-                    style={{
-                      flexDirection: 'row',
-                    }}>
-                    <View>
-                      <Tile tileX={-1} tileY={-1} type={mapTypeState} />
-                      <Tile tileX={-1} tileY={0} type={mapTypeState} />
-                      <Tile tileX={-1} tileY={1} type={mapTypeState} />
-                    </View>
-                    <View>
-                      <Tile tileX={0} tileY={-1} type={mapTypeState} />
-                      <Tile tileX={0} tileY={0} type={mapTypeState} />
-                      <Tile tileX={0} tileY={1} type={mapTypeState} />
-                    </View>
-                    <View>
-                      <Tile tileX={1} tileY={-1} type={mapTypeState} />
-                      <Tile tileX={1} tileY={0} type={mapTypeState} />
-                      <Tile tileX={1} tileY={1} type={mapTypeState} />
-                    </View>
-                  </View>
-                );
-              }}
-            />
-          );
+      <Animated
+        provider={PROVIDER_GOOGLE}
+        style={{width: '100%', height: '100%'}}
+        onRegionChange={(region) => {
+          // console.log(region);
+          // setLatitude(region.latitude);
+          // setLongitude(region.longitude);
         }}
-      />
+        // initialRegion={{
+        //   latitude: LocationRedux.latitude,
+        //   longitude: LocationRedux.longitude,
+        //   latitudeDelta: ZOOM,
+        //   longitudeDelta: ZOOM,
+        // }}
+        region={
+          new AnimatedRegion({
+            latitude: LocationRedux.latitude,
+            longitude: LocationRedux.longitude,
+            latitudeDelta: 10,
+            longitudeDelta: 10,
+          })
+        }>
+        <UrlTile
+          urlTemplate={`https://tile.openweathermap.org/map/${mapTypeState}/{z}/{x}/{y}.png?appid=${OPEN_WEATHER_API_KEY}`}
+          maximumZ={19}
+          flipY={false}
+        />
+        <Marker
+          draggable
+          coordinate={{
+            latitude: LocationRedux.latitude,
+            longitude: LocationRedux.longitude,
+          }}
+          title={GeoLocationRedux.name}
+          description={GeoLocationRedux.name}
+          onDragEnd={async (marker) => {
+            // console.log(marker.nativeEvent.coordinate);
+            // const settingData = {
+            //   ...settingRedux,
+            //   current: false,
+            // };
+            // console.log('settingData', settingData);
+            // dispatch(setSetting(settingData));
+            // await AsyncStorage.setItem('setting', JSON.stringify(settingData));
+            // const locationData = {
+            //   latitude: marker.nativeEvent.coordinate.latitude,
+            //   longitude: marker.nativeEvent.coordinate.longitude,
+            // };
+            // console.log('locationData', locationData);
+            // await AsyncStorage.setItem(
+            //   'location',
+            //   JSON.stringify(locationData),
+            // );
+            // dispatch(SetLocation(locationData));
+            // const geoLocationLoad = await LocationHelper.geoLocation(
+            //   settingRedux,
+            //   locationData,
+            // );
+            // dispatch(SetGeo(geoLocationLoad));
+            // console.log('geoLocationLoad', geoLocationLoad);
+            // const forecastFunction = await ForecastHelper.Sync(locationData);
+            // dispatch(SetForecast(forecastFunction));
+          }}
+        />
+      </Animated>
       <View
         style={{
           backgroundColor: 'white',
@@ -148,8 +146,8 @@ export default function Map() {
           width: '40%',
           height: 50,
           position: 'absolute',
-          left: 10,
-          bottom: 10,
+          right: 10,
+          top: 10,
         }}>
         <Picker
           selectedValue={mapTypeState}
@@ -158,14 +156,48 @@ export default function Map() {
           onValueChange={async (itemValue, itemIndex) => {
             setMapTypeState(itemValue);
           }}>
-          <Picker.Item label="Temperature" value="temp_new" />
-          <Picker.Item label="Precipitation" value="precipitation_new" />
-          <Picker.Item label="Clouds" value="clouds_new" />
-          <Picker.Item label="Sea level pressure" value="pressure_new" />
-          <Picker.Item label="Wind speed" value="wind_new" />
+          <Picker.Item label="Temperature (°C)" value="temp_new" />
+          <Picker.Item label="Precipitation (mm)" value="precipitation_new" />
+          <Picker.Item label="Clouds (%)" value="clouds_new" />
+          <Picker.Item label="Sea level pressure (kPa)" value="pressure_new" />
+          <Picker.Item label="Wind speed (m/s)" value="wind_new" />
         </Picker>
       </View>
       <View
+        style={{
+          backgroundColor: 'transparent',
+          borderRadius: 5,
+          width: 20,
+          height: '50%',
+          position: 'absolute',
+          right: 10,
+          bottom: 10,
+          overflow: 'hidden',
+          borderWidth: 1,
+          borderColor: 'rgba(0,0,0,0.1)',
+        }}>
+        {legends[mapTypeState].map((element) => {
+          return (
+            <View
+              style={{
+                width: '100%',
+                height: 100 / legends[mapTypeState].length + '%',
+                backgroundColor: element.color,
+                justifyContent: 'center',
+                alignItems: 'center',
+              }}>
+              <Text
+                style={{
+                  color: element.text ? element.text : 'white',
+                  fontSize: 8,
+                }}>
+                {element.value}
+              </Text>
+            </View>
+          );
+        })}
+      </View>
+      {/* <View
         style={{
           backgroundColor: 'white',
           borderRadius: 5,
@@ -177,9 +209,9 @@ export default function Map() {
         }}>
         <TouchableOpacity
           onPress={() => {
-            ZOOM <= 14 && setZOOM(ZOOM + 1);
+            setZOOM(ZOOM / 2);
           }}
-          disabled={ZOOM >= 15}
+          // disabled={ZOOM >= 15}
           style={{
             width: 40,
             height: 40,
@@ -192,15 +224,15 @@ export default function Map() {
             <Ionicons
               name="ios-add-circle-outline"
               size={25}
-              color={ZOOM >= 15 ? 'gray' : 'black'}
+              // color={ZOOM >= 15 ? 'gray' : 'black'}
             />
           </Text>
         </TouchableOpacity>
         <TouchableOpacity
           onPress={() => {
-            ZOOM >= 4 && setZOOM(ZOOM - 1);
+            setZOOM(ZOOM * 2);
           }}
-          disabled={ZOOM <= 3}
+          // disabled={ZOOM <= 3}
           style={{
             width: 40,
             height: 40,
@@ -211,11 +243,11 @@ export default function Map() {
             <Ionicons
               name="ios-remove-circle-outline"
               size={25}
-              color={ZOOM <= 3 ? 'gray' : 'black'}
+              // color={ZOOM <= 3 ? 'gray' : 'black'}
             />
           </Text>
         </TouchableOpacity>
-      </View>
+      </View> */}
     </View>
   );
 }

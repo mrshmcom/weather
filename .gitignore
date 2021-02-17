@@ -62,5 +62,7 @@ buck-out/
 # Configs
 google-services.json
 firebaseConfig.json
+google_maps_api.xml
+AndroidManifest.xml
 gradle.properties
 .env

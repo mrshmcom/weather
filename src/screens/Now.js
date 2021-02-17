@@ -4,7 +4,6 @@ import {
   ScrollView,
   Text,
   View,
-  ActivityIndicator,
   Dimensions,
   TouchableOpacity,
 } from 'react-native';
@@ -33,31 +32,24 @@ export default () => {
   const LocationRedux = useSelector((state) => state.LocationReducer.location);
   const SettingRedux = useSelector((state) => state.SettingReducer.setting);
 
-  const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
-  const [geoState, setGeoState] = useState({});
-  const [locationState, setLocationState] = useState({});
-  const [forecastState, setForecastState] = useState({});
-  const [settingState, setSettingState] = useState({});
   const [stared, setStared] = useState(false);
 
   const Sync = async () => {
     try {
       setRefreshing(true);
 
-      const locationLoad = await Location.load(settingState);
+      const locationLoad = await Location.load(SettingRedux);
       dispatch(SetLocation(locationLoad));
 
       const geoLocationLoad = await Location.geoLocation(
-        settingState,
+        SettingRedux,
         locationLoad,
       );
       dispatch(SetGeo(geoLocationLoad));
-      setLocationState(locationLoad);
 
       const forecastFunction = await Forecast.Sync(locationLoad);
       dispatch(SetForecast(forecastFunction));
-      setForecastState(forecastFunction);
 
       setRefreshing(false);
     } catch (error) {
@@ -88,9 +80,9 @@ export default () => {
     const bookmark = JSON.parse(await AsyncStorage.getItem('bookmark'));
 
     bookmark.push({
-      center: [locationState.longitude, locationState.latitude],
-      place_name: geoState.name,
-      text: geoState.name,
+      center: [LocationRedux.longitude, LocationRedux.latitude],
+      place_name: geoLocationRedux.name,
+      text: geoLocationRedux.name,
     });
 
     await AsyncStorage.setItem('bookmark', JSON.stringify(bookmark));
@@ -100,38 +92,18 @@ export default () => {
     setStared(false);
     const bookmark = JSON.parse(await AsyncStorage.getItem('bookmark'));
 
-    const filterBook = bookmark.filter((x) => x.place_name !== geoState.name);
+    const filterBook = bookmark.filter(
+      (x) => x.place_name !== geoLocationRedux.name,
+    );
 
     await AsyncStorage.setItem('bookmark', JSON.stringify(filterBook));
   };
 
   useEffect(() => {
-    setLoading(true);
-
-    setForecastState(forecastRedux);
-    setLocationState(LocationRedux);
-    setGeoState(geoLocationRedux);
-    setSettingState(SettingRedux);
-
-    setLoading(false);
-  }, [forecastRedux, SettingRedux, geoLocationRedux, LocationRedux]);
-
-  useEffect(() => {
     checkStar();
   }, [geoLocationRedux]);
 
-  return loading ? (
-    <View
-      style={{
-        backgroundColor: '#5b97ff',
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-      }}>
-      <ActivityIndicator size="large" color="white" />
-      <Text style={{color: 'white'}}>Loading</Text>
-    </View>
-  ) : (
+  return (
     <ScrollView
       style={{
         flex: 1,
@@ -162,7 +134,7 @@ export default () => {
                 marginHorizontal: 5,
                 direction: 'ltr',
               }}>
-              {geoState.name}
+              {geoLocationRedux.name}
             </Text>
             <View>
               {stared ? (
@@ -201,7 +173,7 @@ export default () => {
                 marginLeft: 5,
                 direction: 'ltr',
               }}>
-              {Moment(forecastState.current.dt, 'X').format(
+              {Moment(forecastRedux.current.dt, 'X').format(
                 'ddd, MMM Do, h:mm a',
               )}
             </Text>
@@ -217,7 +189,7 @@ export default () => {
               marginRight: 10,
               flexDirection: 'row',
             }}>
-            {forecastState.current.weather.map((element, index) => {
+            {forecastRedux.current.weather.map((element, index) => {
               return <Icon type={element.icon} key={index} size={100} />;
             })}
           </View>
@@ -228,10 +200,10 @@ export default () => {
               flexDirection: 'row',
             }}>
             <Text style={{color: 'white', fontSize: 75}}>
-              {Math.round(forecastState.current.temp)}
+              {Math.round(forecastRedux.current.temp)}
             </Text>
             <Text style={{color: 'white', fontSize: 25, marginTop: 10}}>
-              {Unit.sign(settingState.unit)}
+              {Unit.sign(SettingRedux.unit)}
             </Text>
           </View>
         </View>
@@ -241,11 +213,11 @@ export default () => {
             alignItems: 'center',
           }}>
           <Text style={{color: 'white'}}>
-            Feels Like {Math.round(forecastState.current.feels_like)}
-            {Unit.sign(settingState.unit)}
+            Feels Like {Math.round(forecastRedux.current.feels_like)}
+            {Unit.sign(SettingRedux.unit)}
           </Text>
           <View style={{flexDirection: 'row'}}>
-            {forecastState.current.weather.map((element, index) => {
+            {forecastRedux.current.weather.map((element, index) => {
               return (
                 <Text style={{color: 'white', marginHorizontal: 2}} key={index}>
                   {element.description.charAt(0).toUpperCase() +
@@ -266,7 +238,7 @@ export default () => {
             flexDirection: 'row',
           }}>
           <View style={{width: '47%'}}>
-            {forecastState.current.rain ? (
+            {forecastRedux.current.rain ? (
               <View
                 style={{
                   flexDirection: 'row',
@@ -277,11 +249,11 @@ export default () => {
                   <Ionicons name="ios-water" size={14} color="white" /> Rain
                 </Text>
                 <Text style={{color: 'white'}}>
-                  {forecastState.current.rain['1h'] + ' mm'}
+                  {forecastRedux.current.rain['1h'] + ' mm'}
                 </Text>
               </View>
             ) : null}
-            {forecastState.current.snow ? (
+            {forecastRedux.current.snow ? (
               <View
                 style={{
                   flexDirection: 'row',
@@ -292,7 +264,7 @@ export default () => {
                   <Ionicons name="ios-snow" size={14} color="white" /> Snow
                 </Text>
                 <Text style={{color: 'white'}}>
-                  {forecastState.current.snow['1h'] + ' mm'}
+                  {forecastRedux.current.snow['1h'] + ' mm'}
                 </Text>
               </View>
             ) : null}
@@ -307,7 +279,7 @@ export default () => {
                 Dew Point
               </Text>
               <Text style={{color: 'white'}}>
-                {forecastState.current.dew_point + Unit.sign(settingState.unit)}
+                {forecastRedux.current.dew_point + Unit.sign(SettingRedux.unit)}
               </Text>
             </View>
             <View
@@ -325,7 +297,7 @@ export default () => {
                 Humidity
               </Text>
               <Text style={{color: 'white'}}>
-                {forecastState.current.humidity + '%'}
+                {forecastRedux.current.humidity + '%'}
               </Text>
             </View>
             <View
@@ -343,7 +315,7 @@ export default () => {
                 Clouds
               </Text>
               <Text style={{color: 'white'}}>
-                {forecastState.current.clouds + '%'}
+                {forecastRedux.current.clouds + '%'}
               </Text>
             </View>
             <View
@@ -361,12 +333,12 @@ export default () => {
                 Wind
               </Text>
               <View style={{flexDirection: 'row', alignItems: 'center'}}>
-                <Wind degree={forecastState.current.wind_deg} size={14} />
+                <Wind degree={forecastRedux.current.wind_deg} size={14} />
                 <Text style={{color: 'white'}}>
                   {' ' +
-                    forecastState.current.wind_speed +
+                    forecastRedux.current.wind_speed +
                     ' ' +
-                    Unit.speed(settingState.unit)}
+                    Unit.speed(SettingRedux.unit)}
                 </Text>
               </View>
             </View>
@@ -394,7 +366,7 @@ export default () => {
                 Pressure
               </Text>
               <Text style={{color: 'white'}}>
-                {forecastState.current.pressure + ' hPa'}
+                {forecastRedux.current.pressure + ' hPa'}
               </Text>
             </View>
             <View
@@ -411,7 +383,7 @@ export default () => {
                 />{' '}
                 UV Index
               </Text>
-              <Text style={{color: 'white'}}>{forecastState.current.uvi}</Text>
+              <Text style={{color: 'white'}}>{forecastRedux.current.uvi}</Text>
             </View>
             <View
               style={{
@@ -424,7 +396,7 @@ export default () => {
                 Visibility
               </Text>
               <Text style={{color: 'white'}}>
-                {forecastState.current.visibility + ' m'}
+                {forecastRedux.current.visibility + ' m'}
               </Text>
             </View>
             <View
@@ -442,7 +414,7 @@ export default () => {
                 Sunrise
               </Text>
               <Text style={{color: 'white'}}>
-                {Moment(forecastState.current.sunrise, 'X').format('h:mm A')}
+                {Moment(forecastRedux.current.sunrise, 'X').format('h:mm A')}
               </Text>
             </View>
             <View
@@ -460,12 +432,12 @@ export default () => {
                 Sunset
               </Text>
               <Text style={{color: 'white'}}>
-                {Moment(forecastState.current.sunset, 'X').format('h:mm A')}
+                {Moment(forecastRedux.current.sunset, 'X').format('h:mm A')}
               </Text>
             </View>
           </View>
         </View>
-        {forecastState.minutely ? (
+        {forecastRedux.minutely ? (
           <View
             style={{
               marginVertical: 30,
@@ -487,14 +459,14 @@ export default () => {
             <LineChart
               bezier
               data={{
-                labels: forecastState.minutely.map((minute, index) => {
+                labels: forecastRedux.minutely.map((minute, index) => {
                   return index % 5 === 0
                     ? Moment(minute.dt, 'X').format('HH:mm')
                     : '';
                 }),
                 datasets: [
                   {
-                    data: forecastState.minutely.map((minute, index) => {
+                    data: forecastRedux.minutely.map((minute, index) => {
                       return minute.precipitation;
                     }),
                   },

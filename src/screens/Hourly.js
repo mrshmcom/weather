@@ -1,11 +1,5 @@
-import React, {useState, useEffect} from 'react';
-import {
-  FlatList,
-  RefreshControl,
-  Text,
-  View,
-  ActivityIndicator,
-} from 'react-native';
+import React, {useState} from 'react';
+import {FlatList, RefreshControl, Text, View} from 'react-native';
 import {useDispatch, useSelector} from 'react-redux';
 import LottieView from 'lottie-react-native';
 
@@ -23,26 +17,22 @@ export default function Hourly() {
   const forecastRedux = useSelector((state) => state.ForecastReducer.forecast);
   const SettingRedux = useSelector((state) => state.SettingReducer.setting);
 
-  const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
-  const [forecastState, setForecastState] = useState({});
-  const [settingState, setSettingState] = useState({});
 
   const Sync = async () => {
     try {
       setRefreshing(true);
 
-      const locationLoad = await Location.load(settingState);
+      const locationLoad = await Location.load(SettingRedux);
       dispatch(SetLocation(locationLoad));
 
       const geoLocationLoad = await Location.geoLocation(
-        settingState,
+        SettingRedux,
         locationLoad,
       );
       dispatch(SetGeo(geoLocationLoad));
 
       const forecastFunction = await Forecast.Sync(locationLoad);
-      setForecastState(forecastFunction);
       dispatch(SetForecast(forecastFunction));
 
       setRefreshing(false);
@@ -51,27 +41,7 @@ export default function Hourly() {
     }
   };
 
-  useEffect(() => {
-    setLoading(true);
-
-    setForecastState(forecastRedux);
-    setSettingState(SettingRedux);
-
-    setLoading(false);
-  }, [forecastRedux, SettingRedux]);
-
-  return loading ? (
-    <View
-      style={{
-        backgroundColor: '#5b97ff',
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-      }}>
-      <ActivityIndicator size="large" color="white" />
-      <Text style={{color: 'white'}}>Loading</Text>
-    </View>
-  ) : (
+  return (
     <View
       style={{
         flex: 1,
@@ -86,10 +56,10 @@ export default function Hourly() {
           width: '100%',
         }}
         contentContainerStyle={{width: '100%'}}
-        data={forecastState.hourly}
+        data={forecastRedux.hourly}
         keyExtractor={(item) => item.dt}
         renderItem={({item, index, separators}) => {
-          return <Hour data={item} setting={settingState} />;
+          return <Hour data={item} setting={SettingRedux} />;
         }}
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={Sync} />
