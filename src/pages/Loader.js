@@ -2,7 +2,6 @@ import React, {useEffect, useState} from 'react';
 import {View, useWindowDimensions, Linking, Share} from 'react-native';
 import {useDispatch} from 'react-redux';
 import {NavigationContainer} from '@react-navigation/native';
-
 import {
   createDrawerNavigator,
   DrawerContentScrollView,
@@ -22,6 +21,8 @@ import SettingHelper from '../helpers/Setting';
 
 import {setSetting} from '../store/action/Setting';
 
+import Languages from '../languages/Languages.json';
+
 const Drawer = createDrawerNavigator();
 
 export default (prop) => {
@@ -31,24 +32,25 @@ export default (prop) => {
   const isLargeScreen = dimensions.width >= 768;
 
   const [loading, setLoading] = useState(true);
+  const [settingState, setSettingState] = useState({});
 
   const CustomDrawerContent = (props) => {
     return (
       <DrawerContentScrollView {...props}>
         <DrawerItemList {...props} />
         <DrawerItem
-          label="Share App"
+          label={Languages[settingState.lang].drawerSharePage}
           onPress={() =>
             Share.share({
               message:
-                'Ammazing and beautifull weather app. check out this here:' +
+                Languages[settingState.lang].shareAppMessage +
                 '\n' +
                 'https://weather.mrshm.ir',
             })
           }
         />
         <DrawerItem
-          label="Website"
+          label={Languages[settingState.lang].drawerWebsitePage}
           onPress={() => Linking.openURL('https://weather.mrshm.ir')}
         />
       </DrawerContentScrollView>
@@ -59,6 +61,7 @@ export default (prop) => {
     try {
       const settingLoad = await SettingHelper.load();
       dispatch(setSetting(settingLoad));
+      setSettingState(settingLoad);
       console.log('settingLoad', settingLoad);
 
       setLoading(false);
@@ -92,11 +95,26 @@ export default (prop) => {
               color: '#ffffff',
               // width: isLargeScreen ? 240 : '100%',
             }}>
-            <Drawer.Screen name="Weather" component={WeatherPage} />
-            <Drawer.Screen name="Locations" component={LocationPage} />
-            <Drawer.Screen name="Setting" component={SettingPage} />
-            <Drawer.Screen name="Support" component={SupportPage} />
-            <Drawer.Screen name="About" component={AboutPage} />
+            <Drawer.Screen
+              name={Languages[settingState.lang].drawerWeatherPage}
+              component={WeatherPage}
+            />
+            <Drawer.Screen
+              name={Languages[settingState.lang].drawerLocationPage}
+              component={LocationPage}
+            />
+            <Drawer.Screen
+              name={Languages[settingState.lang].drawerSettingPage}
+              component={SettingPage}
+            />
+            <Drawer.Screen
+              name={Languages[settingState.lang].drawerSupportPage}
+              component={SupportPage}
+            />
+            <Drawer.Screen
+              name={Languages[settingState.lang].drawerAboutPage}
+              component={AboutPage}
+            />
           </Drawer.Navigator>
         </NavigationContainer>
       )}

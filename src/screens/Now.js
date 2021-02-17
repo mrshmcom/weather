@@ -2,7 +2,6 @@ import React, {useState, useEffect} from 'react';
 import {
   RefreshControl,
   ScrollView,
-  Text,
   View,
   Dimensions,
   TouchableOpacity,
@@ -20,9 +19,12 @@ import Unit from '../helpers/Unit';
 
 import Icon from '../components/Icon';
 import Wind from '../components/Wind';
+import Text from '../components/Text';
 
 import {SetForecast} from '../store/action/Forecast';
 import {SetLocation, SetGeo} from '../store/action/Location';
+
+import Languages from '../languages/Languages.json';
 
 export default () => {
   const dispatch = useDispatch();
@@ -213,8 +215,11 @@ export default () => {
             alignItems: 'center',
           }}>
           <Text style={{color: 'white'}}>
-            Feels Like {Math.round(forecastRedux.current.feels_like)}
-            {Unit.sign(SettingRedux.unit)}
+            {Languages[SettingRedux.lang].feelsLike +
+              ' ' +
+              Math.round(forecastRedux.current.feels_like) +
+              ' ' +
+              Unit.sign(SettingRedux.unit)}
           </Text>
           <View style={{flexDirection: 'row'}}>
             {forecastRedux.current.weather.map((element, index) => {
@@ -246,7 +251,8 @@ export default () => {
                   marginBottom: 5,
                 }}>
                 <Text style={{color: 'white'}}>
-                  <Ionicons name="ios-water" size={14} color="white" /> Rain
+                  <Ionicons name="ios-water" size={14} color="white" />{' '}
+                  {Languages[SettingRedux.lang].rain}
                 </Text>
                 <Text style={{color: 'white'}}>
                   {forecastRedux.current.rain['1h'] + ' mm'}
@@ -261,7 +267,8 @@ export default () => {
                   marginBottom: 5,
                 }}>
                 <Text style={{color: 'white'}}>
-                  <Ionicons name="ios-snow" size={14} color="white" /> Snow
+                  <Ionicons name="ios-snow" size={14} color="white" />{' '}
+                  {Languages[SettingRedux.lang].snow}
                 </Text>
                 <Text style={{color: 'white'}}>
                   {forecastRedux.current.snow['1h'] + ' mm'}
@@ -276,7 +283,7 @@ export default () => {
               }}>
               <Text style={{color: 'white'}}>
                 <Ionicons name="ios-water-outline" size={14} color="white" />{' '}
-                Dew Point
+                {Languages[SettingRedux.lang].dewPoint}
               </Text>
               <Text style={{color: 'white'}}>
                 {forecastRedux.current.dew_point + Unit.sign(SettingRedux.unit)}
@@ -294,7 +301,7 @@ export default () => {
                   size={14}
                   color="white"
                 />{' '}
-                Humidity
+                {Languages[SettingRedux.lang].humidity}
               </Text>
               <Text style={{color: 'white'}}>
                 {forecastRedux.current.humidity + '%'}
@@ -312,7 +319,7 @@ export default () => {
                   size={14}
                   color="white"
                 />{' '}
-                Clouds
+                {Languages[SettingRedux.lang].clouds}
               </Text>
               <Text style={{color: 'white'}}>
                 {forecastRedux.current.clouds + '%'}
@@ -330,7 +337,7 @@ export default () => {
                   size={14}
                   color="white"
                 />{' '}
-                Wind
+                {Languages[SettingRedux.lang].wind}
               </Text>
               <View style={{flexDirection: 'row', alignItems: 'center'}}>
                 <Wind degree={forecastRedux.current.wind_deg} size={14} />
@@ -363,7 +370,7 @@ export default () => {
                   size={14}
                   color="white"
                 />{' '}
-                Pressure
+                {Languages[SettingRedux.lang].pressure}
               </Text>
               <Text style={{color: 'white'}}>
                 {forecastRedux.current.pressure + ' hPa'}
@@ -381,7 +388,7 @@ export default () => {
                   size={14}
                   color="white"
                 />{' '}
-                UV Index
+                {Languages[SettingRedux.lang].uvIndex}
               </Text>
               <Text style={{color: 'white'}}>{forecastRedux.current.uvi}</Text>
             </View>
@@ -393,7 +400,7 @@ export default () => {
               }}>
               <Text style={{color: 'white'}}>
                 <MaterialCommunityIcons name="eye" size={14} color="white" />{' '}
-                Visibility
+                {Languages[SettingRedux.lang].visibility}
               </Text>
               <Text style={{color: 'white'}}>
                 {forecastRedux.current.visibility + ' m'}
@@ -411,7 +418,7 @@ export default () => {
                   size={14}
                   color="white"
                 />{' '}
-                Sunrise
+                {Languages[SettingRedux.lang].sunrise}
               </Text>
               <Text style={{color: 'white'}}>
                 {Moment(forecastRedux.current.sunrise, 'X').format('h:mm A')}
@@ -429,7 +436,7 @@ export default () => {
                   size={14}
                   color="white"
                 />{' '}
-                Sunset
+                {Languages[SettingRedux.lang].sunset}
               </Text>
               <Text style={{color: 'white'}}>
                 {Moment(forecastRedux.current.sunset, 'X').format('h:mm A')}
@@ -452,9 +459,8 @@ export default () => {
               style={{
                 color: '#5b97ff',
                 marginVertical: 10,
-                fontWeight: 'bold',
               }}>
-              Precipitation Volume
+              {Languages[SettingRedux.lang].precipitationVolume}
             </Text>
             <LineChart
               bezier

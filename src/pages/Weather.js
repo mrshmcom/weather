@@ -5,7 +5,6 @@ import {
   View,
   ActivityIndicator,
   Keyboard,
-  Text,
 } from 'react-native';
 import {useDispatch, useSelector} from 'react-redux';
 import {Snackbar} from 'react-native-paper';
@@ -23,6 +22,7 @@ import Map from '../screens/Map';
 
 import SearchItem from '../components/SearchItem';
 import Loading from '../components/Loading';
+import Text from '../components/Text';
 
 import LocationHelper from '../helpers/Location';
 import ForecastHelper from '../helpers/Forecast';
@@ -30,6 +30,8 @@ import ForecastHelper from '../helpers/Forecast';
 import {setSetting} from '../store/action/Setting';
 import {SetLocation, SetGeo} from '../store/action/Location';
 import {SetForecast} from '../store/action/Forecast';
+
+import Languages from '../languages/Languages.json';
 
 const Tab = createMaterialTopTabNavigator();
 
@@ -40,7 +42,7 @@ export default (props) => {
   const settingRedux = useSelector((state) => state.SettingReducer.setting);
 
   const [loading, setLoading] = useState(true);
-  const [fetching, setFetching] = useState(false);
+  const [fetching, setFetching] = useState(true);
   const [connected, setConnected] = useState(true);
   const [searchField, setSearchField] = useState('');
   const [searchResult, setSearchResult] = useState([]);
@@ -66,8 +68,6 @@ export default (props) => {
 
   const Load = async () => {
     try {
-      setFetching(true);
-
       const locationLoad = await LocationHelper.load(settingRedux);
       dispatch(SetLocation(locationLoad));
       console.log('locationLoad', locationLoad);
@@ -114,7 +114,7 @@ export default (props) => {
           loop
         />
         <Text style={{color: 'white', marginTop: 20}}>
-          No internet connection!
+          {Languages[settingRedux.lang].noInternetMessage}
         </Text>
         <TouchableOpacity
           style={{
@@ -127,7 +127,9 @@ export default (props) => {
           onPress={() => {
             Load();
           }}>
-          <Text style={{color: '#5b97ff'}}>Reload</Text>
+          <Text style={{color: '#5b97ff'}}>
+            {Languages[settingRedux.lang].reloadButton}
+          </Text>
         </TouchableOpacity>
       </View>
     ) : (
@@ -144,7 +146,9 @@ export default (props) => {
           autoPlay
           loop
         />
-        <Text style={{color: 'white'}}>Unable to fetch data from server!</Text>
+        <Text style={{color: 'white'}}>
+          {Languages[settingRedux.lang].noDataMessage}
+        </Text>
         <TouchableOpacity
           style={{
             marginVertical: 20,
@@ -156,7 +160,9 @@ export default (props) => {
           onPress={() => {
             Load();
           }}>
-          <Text style={{color: '#5b97ff'}}>Reload</Text>
+          <Text style={{color: '#5b97ff'}}>
+            {Languages[settingRedux.lang].reloadButton}
+          </Text>
         </TouchableOpacity>
       </View>
     )
@@ -182,7 +188,7 @@ export default (props) => {
           />
           <TextInput
             ref={searchInput}
-            placeholder="Search"
+            placeholder={Languages[settingRedux.lang].searchPlaceholder}
             value={searchField}
             onChangeText={async (value) => {
               setSearchField(value);
@@ -270,18 +276,26 @@ export default (props) => {
           labelStyle: {fontSize: 12, fontWeight: 'normal'},
           style: {backgroundColor: '#5b97ff'},
         }}>
-        <Tab.Screen name="Now" component={Now} options={{tabBarLabel: 'Now'}} />
+        <Tab.Screen
+          name="Now"
+          component={Now}
+          options={{tabBarLabel: Languages[settingRedux.lang].tabNow}}
+        />
         <Tab.Screen
           name="Hourly"
           component={Hourly}
-          options={{tabBarLabel: 'Hourly'}}
+          options={{tabBarLabel: Languages[settingRedux.lang].tabHourly}}
         />
         <Tab.Screen
           name="Daily"
           component={Daily}
-          options={{tabBarLabel: 'Daily'}}
+          options={{tabBarLabel: Languages[settingRedux.lang].tabDaily}}
         />
-        <Tab.Screen name="Map" component={Map} options={{tabBarLabel: 'Map'}} />
+        <Tab.Screen
+          name="Map"
+          component={Map}
+          options={{tabBarLabel: Languages[settingRedux.lang].tabMap}}
+        />
       </Tab.Navigator>
       {searchResult.length > 0 ? (
         <View
@@ -312,7 +326,7 @@ export default (props) => {
       <Snackbar
         visible={!connected}
         action={{
-          label: 'Reload',
+          label: Languages[settingRedux.lang].reloadButton,
           onPress: () => {
             Load();
           },
@@ -320,7 +334,7 @@ export default (props) => {
         onDismiss={() => {
           console.log('dismiss');
         }}>
-        No internet connection!
+        {Languages[settingRedux.lang].noInternetMessage}
       </Snackbar>
     </View>
   );
