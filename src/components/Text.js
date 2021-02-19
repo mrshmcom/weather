@@ -13,12 +13,12 @@ export default (props) => {
         {...style},
         {
           fontFamily:
-            settingRedux.lang === 'fa'
-              ? style.fontWeight === 'bold'
+            settingRedux.language === 'fa'
+              ? style && style.fontWeight && style.fontWeight === 'bold'
                 ? 'IRANSansMobile_Bold'
                 : 'IRANSansMobile'
               : null,
-          direction: settingRedux.lang === 'fa' ? 'rtl' : 'ltr',
+          direction: settingRedux.isRTL ? 'rtl' : 'ltr',
         },
       ]}>
       {children}

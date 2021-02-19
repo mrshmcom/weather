@@ -1,12 +1,15 @@
 import React, {useState} from 'react';
-import {Text, View, TouchableOpacity} from 'react-native';
+import {View, TouchableOpacity} from 'react-native';
 import Moment from 'moment';
+import Jalali from 'moment-jalaali';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 
+import Text from './Text';
 import Icon from './Icon';
 import Wind from './Wind';
 
+import Setting from '../helpers/Setting';
 import Unit from '../helpers/Unit';
 
 export default (props) => {
@@ -36,9 +39,18 @@ export default (props) => {
           style={{
             width: '20%',
             flexDirection: 'column',
+            alignItems: 'flex-start',
           }}>
           <Text style={{color: 'white'}}>
-            {Moment(data.dt, 'X').format('HH:mm ddd')}
+            {setting.language === 'fa'
+              ? Setting.toPersianString(
+                  Setting.getWeekDayName(
+                    Jalali(data.dt, 'X')
+                      .zone(setting.timeZone)
+                      .format('HH:mm ddd'),
+                  ),
+                )
+              : Moment(data.dt, 'X').zone(setting.timeZone).format('HH:mm ddd')}
           </Text>
         </View>
         <View
@@ -83,11 +95,17 @@ export default (props) => {
               width: '30%',
             }}>
             <Text style={{color: 'white'}}>
-              {Math.round(data.temp) +
-                ' (' +
-                Math.round(data.feels_like) +
-                ')' +
-                Unit.sign(setting.unit)}
+              {(setting.language === 'fa'
+                ? Setting.toPersianString(
+                    Math.round(data.temp) +
+                      ' (' +
+                      Math.round(data.feels_like) +
+                      ')',
+                  )
+                : Math.round(data.temp) +
+                  ' (' +
+                  Math.round(data.feels_like) +
+                  ')') + Unit.sign(setting.unit)}
             </Text>
           </View>
         </View>
@@ -112,9 +130,13 @@ export default (props) => {
                 size={14}
                 color="white"
               />{' '}
-              Humidity
+              {Setting.Translate('humidity')}
             </Text>
-            <Text style={{color: 'white'}}>{data.humidity + '%'}</Text>
+            <Text style={{color: 'white'}}>
+              {(setting.language === 'fa'
+                ? Setting.toPersianString(data.humidity.toString())
+                : data.humidity) + '%'}
+            </Text>
           </View>
           <View
             style={{
@@ -127,9 +149,13 @@ export default (props) => {
                 size={14}
                 color="white"
               />{' '}
-              Cloudiness
+              {Setting.Translate('clouds')}
             </Text>
-            <Text style={{color: 'white'}}>{' ' + data.clouds + '%'}</Text>
+            <Text style={{color: 'white'}}>
+              {(setting.language === 'fa'
+                ? Setting.toPersianString(data.clouds.toString())
+                : data.clouds) + '%'}
+            </Text>
           </View>
           <View
             style={{
@@ -142,10 +168,12 @@ export default (props) => {
                 size={14}
                 color="white"
               />{' '}
-              Precipitation
+              {Setting.Translate('precipitation')}
             </Text>
             <Text style={{color: 'white'}}>
-              {' ' + Math.round(data.pop * 100) + '%'}
+              {(setting.language === 'fa'
+                ? Setting.toPersianString(Math.round(data.pop * 100).toString())
+                : Math.round(data.pop * 100)) + '%'}
             </Text>
           </View>
           {data.rain ? (
@@ -155,10 +183,13 @@ export default (props) => {
                 justifyContent: 'space-between',
               }}>
               <Text style={{color: 'white'}}>
-                <Ionicons name="ios-water" size={14} color="white" /> Rain
+                <Ionicons name="ios-water" size={14} color="white" />{' '}
+                {Setting.Translate('rain')}
               </Text>
               <Text style={{color: 'white'}}>
-                {' ' + data.rain['1h'] + ' mm'}
+                {(setting.language === 'fa'
+                  ? Setting.toPersianString(data.rain['1h'].toString())
+                  : data.rain['1h']) + ' mm'}
               </Text>
             </View>
           ) : null}
@@ -169,10 +200,13 @@ export default (props) => {
                 justifyContent: 'space-between',
               }}>
               <Text style={{color: 'white'}}>
-                <Ionicons name="ios-snow" size={14} color="white" /> Snow
+                <Ionicons name="ios-snow" size={14} color="white" />{' '}
+                {Setting.Translate('snow')}
               </Text>
               <Text style={{color: 'white'}}>
-                {' ' + data.snow['1h'] + ' mm'}
+                {(setting.language === 'fa'
+                  ? Setting.toPersianString(data.snow['1h'].toString())
+                  : data.snow['1h']) + ' mm'}
               </Text>
             </View>
           ) : null}
@@ -182,11 +216,13 @@ export default (props) => {
               justifyContent: 'space-between',
             }}>
             <Text style={{color: 'white'}}>
-              <Ionicons name="ios-water-outline" size={14} color="white" /> Dew
-              Point
+              <Ionicons name="ios-water-outline" size={14} color="white" />{' '}
+              {Setting.Translate('dewPoint')}
             </Text>
             <Text style={{color: 'white'}}>
-              {data.dew_point + Unit.sign(setting.unit)}
+              {(setting.language === 'fa'
+                ? Setting.toPersianString(data.dew_point.toString())
+                : data.dew_point) + Unit.sign(setting.unit)}
             </Text>
           </View>
         </View>
@@ -209,11 +245,16 @@ export default (props) => {
                 size={14}
                 color="white"
               />{' '}
-              Wind
+              {Setting.Translate('wind')}
             </Text>
             <Text style={{color: 'white'}}>
               <Wind degree={data.wind_deg} size={14} />
-              {' ' + data.wind_speed + ' ' + Unit.speed(setting.unit)}
+              {' ' +
+                (setting.language === 'fa'
+                  ? Setting.toPersianString(data.wind_speed.toString())
+                  : data.wind_speed) +
+                ' ' +
+                Unit.speed(setting.unit)}
             </Text>
           </View>
           <View
@@ -227,9 +268,13 @@ export default (props) => {
                 size={14}
                 color="white"
               />{' '}
-              Pressure
+              {Setting.Translate('pressure')}
             </Text>
-            <Text style={{color: 'white'}}>{data.pressure + ' hPa'}</Text>
+            <Text style={{color: 'white'}}>
+              {(setting.language === 'fa'
+                ? Setting.toPersianString(data.pressure.toString())
+                : data.pressure) + ' hPa'}
+            </Text>
           </View>
           <View
             style={{
@@ -238,9 +283,13 @@ export default (props) => {
             }}>
             <Text style={{color: 'white'}}>
               <MaterialCommunityIcons name="eye" size={14} color="white" />{' '}
-              Visibility
+              {Setting.Translate('visibility')}
             </Text>
-            <Text style={{color: 'white'}}>{data.visibility + ' m'}</Text>
+            <Text style={{color: 'white'}}>
+              {(setting.language === 'fa'
+                ? Setting.toPersianString(data.visibility.toString())
+                : data.visibility) + ' m'}
+            </Text>
           </View>
           <View
             style={{
@@ -253,9 +302,13 @@ export default (props) => {
                 size={14}
                 color="white"
               />{' '}
-              UV Index
+              {Setting.Translate('uvIndex')}
             </Text>
-            <Text style={{color: 'white'}}>{data.uvi}</Text>
+            <Text style={{color: 'white'}}>
+              {setting.language === 'fa'
+                ? Setting.toPersianString(data.uvi.toString())
+                : data.uvi}
+            </Text>
           </View>
         </View>
       </View>

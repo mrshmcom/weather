@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import Moment from 'moment';
+import Jalali from 'moment-jalaali';
 import {useDispatch, useSelector} from 'react-redux';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {LineChart} from 'react-native-chart-kit';
@@ -15,6 +16,7 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 
 import Forecast from '../helpers/Forecast';
 import Location from '../helpers/Location';
+import Setting from '../helpers/Setting';
 import Unit from '../helpers/Unit';
 
 import Icon from '../components/Icon';
@@ -23,8 +25,6 @@ import Text from '../components/Text';
 
 import {SetForecast} from '../store/action/Forecast';
 import {SetLocation, SetGeo} from '../store/action/Location';
-
-import Languages from '../languages/Languages.json';
 
 export default () => {
   const dispatch = useDispatch();
@@ -175,9 +175,21 @@ export default () => {
                 marginLeft: 5,
                 direction: 'ltr',
               }}>
-              {Moment(forecastRedux.current.dt, 'X').format(
-                'ddd, MMM Do, h:mm a',
-              )}
+              {SettingRedux.language === 'fa'
+                ? Setting.getMonthName(
+                    Setting.getWeekDayName(
+                      Setting.toPersianString(
+                        Jalali(forecastRedux.current.dt, 'X')
+                          .zone(SettingRedux.timeZone)
+                          .locale('fa')
+                          .format('dddd، jD jMMMM، HH:mm'),
+                      ),
+                    ),
+                  )
+                : Moment(forecastRedux.current.dt, 'X')
+                    .zone(SettingRedux.timeZone)
+                    .locale('en')
+                    .format('ddd, MMM Do, h:mm a')}
             </Text>
           </View>
         </View>
@@ -202,7 +214,11 @@ export default () => {
               flexDirection: 'row',
             }}>
             <Text style={{color: 'white', fontSize: 75}}>
-              {Math.round(forecastRedux.current.temp)}
+              {SettingRedux.language === 'fa'
+                ? Setting.toPersianString(
+                    Math.round(forecastRedux.current.temp).toString(),
+                  )
+                : Math.round(forecastRedux.current.temp)}
             </Text>
             <Text style={{color: 'white', fontSize: 25, marginTop: 10}}>
               {Unit.sign(SettingRedux.unit)}
@@ -215,10 +231,13 @@ export default () => {
             alignItems: 'center',
           }}>
           <Text style={{color: 'white'}}>
-            {Languages[SettingRedux.lang].feelsLike +
+            {Setting.Translate('feelsLike') +
               ' ' +
-              Math.round(forecastRedux.current.feels_like) +
-              ' ' +
+              (SettingRedux.language === 'fa'
+                ? Setting.toPersianString(
+                    Math.round(forecastRedux.current.feels_like).toString(),
+                  )
+                : Math.round(forecastRedux.current.feels_like)) +
               Unit.sign(SettingRedux.unit)}
           </Text>
           <View style={{flexDirection: 'row'}}>
@@ -232,6 +251,101 @@ export default () => {
             })}
           </View>
         </View>
+        {forecastRedux.alerts && forecastRedux.alerts.length > 0
+          ? forecastRedux.alerts.map((item, index) => {
+              return (
+                <View
+                  key={index}
+                  style={{
+                    width: Dimensions.get('window').width - 40,
+                    marginTop: 50,
+                    paddingHorizontal: 10,
+                    paddingVertical: 10,
+                    marginHorizontal: 20,
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    overflow: 'hidden',
+                    backgroundColor: 'red',
+                    borderRadius: 10,
+                  }}>
+                  <View style={{flexDirection: 'row', width: '100%'}}>
+                    <View
+                      style={{
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        width: '25%',
+                      }}>
+                      <Text>
+                        <Ionicons
+                          name="ios-alert-circle"
+                          size={50}
+                          color="white"
+                        />
+                      </Text>
+                    </View>
+                    <View style={{width: '75%', alignItems: 'flex-start'}}>
+                      <Text style={{color: 'white'}}>
+                        {Setting.Translate('alert') + ': ' + item.event}
+                      </Text>
+                      <Text style={{color: 'white'}}>
+                        {Setting.Translate('from') +
+                          ': ' +
+                          (SettingRedux.language === 'fa'
+                            ? Setting.getMonthName(
+                                Setting.getWeekDayName(
+                                  Setting.toPersianString(
+                                    Jalali(item.start, 'X')
+                                      .zone(SettingRedux.timeZone)
+                                      .locale('fa')
+                                      .format('dddd، jD jMMMM، HH:mm'),
+                                  ),
+                                ),
+                              )
+                            : Moment(item.start, 'X')
+                                .zone(SettingRedux.timeZone)
+                                .locale('en')
+                                .format('ddd, MMM Do, h:mm a'))}
+                      </Text>
+                      <Text style={{color: 'white'}}>
+                        {Setting.Translate('to') +
+                          ': ' +
+                          (SettingRedux.language === 'fa'
+                            ? Setting.getMonthName(
+                                Setting.getWeekDayName(
+                                  Setting.toPersianString(
+                                    Jalali(item.end, 'X')
+                                      .zone(SettingRedux.timeZone)
+                                      .locale('fa')
+                                      .format('dddd، jD jMMMM، HH:mm'),
+                                  ),
+                                ),
+                              )
+                            : Moment(item.end, 'X')
+                                .zone(SettingRedux.timeZone)
+                                .locale('en')
+                                .format('ddd, MMM Do, h:mm a'))}
+                      </Text>
+                    </View>
+                  </View>
+                  <View
+                    style={{
+                      width: '100%',
+                      height: 1,
+                      backgroundColor: 'rgba(255,255,255,0.7)',
+                      marginVertical: 10,
+                    }}
+                  />
+                  <View>
+                    <Text style={{textAlign: 'justify', color: 'white'}}>
+                      {item.sender_name +
+                        ': ' +
+                        item.description.replace(/\n/g, '')}
+                    </Text>
+                  </View>
+                </View>
+              );
+            })
+          : null}
         <View
           style={{
             width: '100%',
@@ -252,10 +366,14 @@ export default () => {
                 }}>
                 <Text style={{color: 'white'}}>
                   <Ionicons name="ios-water" size={14} color="white" />{' '}
-                  {Languages[SettingRedux.lang].rain}
+                  {Setting.Translate('rain')}
                 </Text>
                 <Text style={{color: 'white'}}>
-                  {forecastRedux.current.rain['1h'] + ' mm'}
+                  {(SettingRedux.language === 'fa'
+                    ? Setting.toPersianString(
+                        forecastRedux.current.rain['1h'].toString(),
+                      )
+                    : forecastRedux.current.rain['1h']) + ' mm'}
                 </Text>
               </View>
             ) : null}
@@ -268,10 +386,14 @@ export default () => {
                 }}>
                 <Text style={{color: 'white'}}>
                   <Ionicons name="ios-snow" size={14} color="white" />{' '}
-                  {Languages[SettingRedux.lang].snow}
+                  {Setting.Translate('snow')}
                 </Text>
                 <Text style={{color: 'white'}}>
-                  {forecastRedux.current.snow['1h'] + ' mm'}
+                  {(SettingRedux.language === 'fa'
+                    ? Setting.toPersianString(
+                        forecastRedux.current.snow['1h'].toString(),
+                      )
+                    : forecastRedux.current.snow['1h']) + ' mm'}
                 </Text>
               </View>
             ) : null}
@@ -283,10 +405,15 @@ export default () => {
               }}>
               <Text style={{color: 'white'}}>
                 <Ionicons name="ios-water-outline" size={14} color="white" />{' '}
-                {Languages[SettingRedux.lang].dewPoint}
+                {Setting.Translate('dewPoint')}
               </Text>
               <Text style={{color: 'white'}}>
-                {forecastRedux.current.dew_point + Unit.sign(SettingRedux.unit)}
+                {(SettingRedux.language === 'fa'
+                  ? Setting.toPersianString(
+                      forecastRedux.current.dew_point.toString(),
+                    )
+                  : forecastRedux.current.dew_point) +
+                  Unit.sign(SettingRedux.unit)}
               </Text>
             </View>
             <View
@@ -301,10 +428,14 @@ export default () => {
                   size={14}
                   color="white"
                 />{' '}
-                {Languages[SettingRedux.lang].humidity}
+                {Setting.Translate('humidity')}
               </Text>
               <Text style={{color: 'white'}}>
-                {forecastRedux.current.humidity + '%'}
+                {(SettingRedux.language === 'fa'
+                  ? Setting.toPersianString(
+                      forecastRedux.current.humidity.toString(),
+                    )
+                  : forecastRedux.current.humidity) + '%'}
               </Text>
             </View>
             <View
@@ -319,10 +450,14 @@ export default () => {
                   size={14}
                   color="white"
                 />{' '}
-                {Languages[SettingRedux.lang].clouds}
+                {Setting.Translate('clouds')}
               </Text>
               <Text style={{color: 'white'}}>
-                {forecastRedux.current.clouds + '%'}
+                {(SettingRedux.language === 'fa'
+                  ? Setting.toPersianString(
+                      forecastRedux.current.clouds.toString(),
+                    )
+                  : forecastRedux.current.clouds) + '%'}
               </Text>
             </View>
             <View
@@ -337,13 +472,17 @@ export default () => {
                   size={14}
                   color="white"
                 />{' '}
-                {Languages[SettingRedux.lang].wind}
+                {Setting.Translate('wind')}
               </Text>
               <View style={{flexDirection: 'row', alignItems: 'center'}}>
                 <Wind degree={forecastRedux.current.wind_deg} size={14} />
                 <Text style={{color: 'white'}}>
                   {' ' +
-                    forecastRedux.current.wind_speed +
+                    (SettingRedux.language === 'fa'
+                      ? Setting.toPersianString(
+                          forecastRedux.current.wind_speed.toString(),
+                        )
+                      : forecastRedux.current.wind_speed) +
                     ' ' +
                     Unit.speed(SettingRedux.unit)}
                 </Text>
@@ -370,10 +509,14 @@ export default () => {
                   size={14}
                   color="white"
                 />{' '}
-                {Languages[SettingRedux.lang].pressure}
+                {Setting.Translate('pressure')}
               </Text>
               <Text style={{color: 'white'}}>
-                {forecastRedux.current.pressure + ' hPa'}
+                {(SettingRedux.language === 'fa'
+                  ? Setting.toPersianString(
+                      forecastRedux.current.pressure.toString(),
+                    )
+                  : forecastRedux.current.pressure) + ' hPa'}
               </Text>
             </View>
             <View
@@ -388,9 +531,15 @@ export default () => {
                   size={14}
                   color="white"
                 />{' '}
-                {Languages[SettingRedux.lang].uvIndex}
+                {Setting.Translate('uvIndex')}
               </Text>
-              <Text style={{color: 'white'}}>{forecastRedux.current.uvi}</Text>
+              <Text style={{color: 'white'}}>
+                {SettingRedux.language === 'fa'
+                  ? Setting.toPersianString(
+                      forecastRedux.current.uvi.toString(),
+                    )
+                  : forecastRedux.current.uvi}
+              </Text>
             </View>
             <View
               style={{
@@ -400,10 +549,14 @@ export default () => {
               }}>
               <Text style={{color: 'white'}}>
                 <MaterialCommunityIcons name="eye" size={14} color="white" />{' '}
-                {Languages[SettingRedux.lang].visibility}
+                {Setting.Translate('visibility')}
               </Text>
               <Text style={{color: 'white'}}>
-                {forecastRedux.current.visibility + ' m'}
+                {(SettingRedux.language === 'fa'
+                  ? Setting.toPersianString(
+                      forecastRedux.current.visibility.toString(),
+                    )
+                  : forecastRedux.current.visibility) + ' m'}
               </Text>
             </View>
             <View
@@ -418,10 +571,18 @@ export default () => {
                   size={14}
                   color="white"
                 />{' '}
-                {Languages[SettingRedux.lang].sunrise}
+                {Setting.Translate('sunrise')}
               </Text>
               <Text style={{color: 'white'}}>
-                {Moment(forecastRedux.current.sunrise, 'X').format('h:mm A')}
+                {SettingRedux.language === 'fa'
+                  ? Setting.toPersianString(
+                      Moment(forecastRedux.current.sunrise, 'X')
+                        .zone(SettingRedux.timeZone)
+                        .format('HH:mm'),
+                    )
+                  : Moment(forecastRedux.current.sunrise, 'X')
+                      .zone(SettingRedux.timeZone)
+                      .format('h:mm A')}
               </Text>
             </View>
             <View
@@ -436,10 +597,18 @@ export default () => {
                   size={14}
                   color="white"
                 />{' '}
-                {Languages[SettingRedux.lang].sunset}
+                {Setting.Translate('sunset')}
               </Text>
               <Text style={{color: 'white'}}>
-                {Moment(forecastRedux.current.sunset, 'X').format('h:mm A')}
+                {SettingRedux.language === 'fa'
+                  ? Setting.toPersianString(
+                      Moment(forecastRedux.current.sunset, 'X')
+                        .zone(SettingRedux.timeZone)
+                        .format('HH:mm'),
+                    )
+                  : Moment(forecastRedux.current.sunset, 'X')
+                      .zone(SettingRedux.timeZone)
+                      .format('h:mm A')}
               </Text>
             </View>
           </View>
@@ -460,14 +629,16 @@ export default () => {
                 color: '#5b97ff',
                 marginVertical: 10,
               }}>
-              {Languages[SettingRedux.lang].precipitationVolume}
+              {Setting.Translate('precipitationVolume')}
             </Text>
             <LineChart
               bezier
               data={{
                 labels: forecastRedux.minutely.map((minute, index) => {
                   return index % 5 === 0
-                    ? Moment(minute.dt, 'X').format('HH:mm')
+                    ? Moment(minute.dt, 'X')
+                        .zone(SettingRedux.timeZone)
+                        .format('HH:mm')
                     : '';
                 }),
                 datasets: [

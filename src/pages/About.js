@@ -7,17 +7,21 @@ import {
   Image,
   ScrollView,
 } from 'react-native';
-import LottieView from 'lottie-react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 
 import NavBar from '../components/NavBar';
+
+import Setting from '../helpers/Setting';
 
 export default (props) => {
   const {navigation} = props;
 
   return (
     <View style={{backgroundColor: '#fff', width: '100%', height: '100%'}}>
-      <NavBar navigation={navigation} title="About" />
+      <NavBar
+        navigation={navigation}
+        title={Setting.Translate('drawerAboutPage')}
+      />
       <ScrollView>
         <View style={{alignItems: 'center'}}>
           <Image
@@ -125,8 +129,16 @@ export default (props) => {
               <View style={{width: 30}} />
               <Text
                 style={{marginEnd: 30, textAlign: 'justify', color: 'gray'}}>
-                © 2021 OpenStreetMap and contributors
-                https://www.openstreetmap.org/copyright
+                Copyright (c) 2017 Airbnb Licensed under the The MIT License
+                (MIT) (the "License"); you may not use this file except in
+                compliance with the License. You may obtain a copy of the
+                License at
+                https://raw.githubusercontent.com/airbnb/react-native-maps/master/LICENSE
+                Unless required by applicable law or agreed to in writing,
+                software distributed under the License is distributed on an "AS
+                IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+                express or implied. See the License for the specific language
+                governing permissions and limitations under the License.
               </Text>
             </View>
           </View>

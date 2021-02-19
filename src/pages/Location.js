@@ -6,6 +6,8 @@ import LottieView from 'lottie-react-native';
 import NavBar from '../components/NavBar';
 import BookmarkItem from '../components/BookmarkItem';
 
+import Setting from '../helpers/Setting';
+
 export default (props) => {
   const {navigation} = props;
 
@@ -30,7 +32,10 @@ export default (props) => {
 
   return (
     <View style={{backgroundColor: '#fff', width: '100%', height: '100%'}}>
-      <NavBar navigation={navigation} title="Location" />
+      <NavBar
+        navigation={navigation}
+        title={Setting.Translate('drawerLocationPage')}
+      />
       <FlatList
         style={{width: '100%'}}
         contentContainerStyle={{width: '100%'}}
@@ -60,9 +65,9 @@ export default (props) => {
               loop
             />
             <Text style={{fontSize: 20, fontWeight: 'bold'}}>
-              No Saved Location!
+              {Setting.Translate('noLocation')}
             </Text>
-            <Text>Pull down to refresh.</Text>
+            <Text>{Setting.Translate('pullDownRefresh')}</Text>
           </View>
         }
       />

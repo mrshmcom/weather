@@ -1,12 +1,14 @@
 import React, {useState, useEffect} from 'react';
-import {Text, View, Picker} from 'react-native';
+import {Text, View} from 'react-native';
 import {useDispatch, useSelector} from 'react-redux';
+import {Picker} from '@react-native-picker/picker';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import NavBar from '../components/NavBar';
 
 import Forecast from '../helpers/Forecast';
 import Location from '../helpers/Location';
+import Setting from '../helpers/Setting';
 
 import {SetLocation, SetGeo} from '../store/action/Location';
 import {SetForecast} from '../store/action/Forecast';
@@ -25,7 +27,7 @@ export default (props) => {
   const Load = async () => {
     setSettingState(SettingRedux);
     setUnit(SettingRedux.unit);
-    setLang(SettingRedux.lang);
+    setLang(SettingRedux.language);
   };
 
   const Sync = async () => {
@@ -52,7 +54,10 @@ export default (props) => {
 
   return (
     <View style={{backgroundColor: '#fff', width: '100%', height: '100%'}}>
-      <NavBar navigation={navigation} title="Setting" />
+      <NavBar
+        navigation={navigation}
+        title={Setting.Translate('drawerSettingPage')}
+      />
       <View
         style={{
           flexDirection: 'row',
@@ -60,7 +65,9 @@ export default (props) => {
           alignItems: 'center',
         }}>
         <View style={{width: '40%'}}>
-          <Text style={{textAlign: 'right'}}>Unit</Text>
+          <Text style={{textAlign: 'right'}}>
+            {Setting.Translate('settingUnit')}
+          </Text>
         </View>
         <View style={{width: '40%'}}>
           <Picker
@@ -94,7 +101,9 @@ export default (props) => {
           alignItems: 'center',
         }}>
         <View style={{width: '40%'}}>
-          <Text style={{textAlign: 'right'}}>Language</Text>
+          <Text style={{textAlign: 'right'}}>
+            {Setting.Translate('settingLanguage')}
+          </Text>
         </View>
         <View style={{width: '40%'}}>
           <Picker
@@ -103,9 +112,10 @@ export default (props) => {
             itemStyle={{}}
             onValueChange={async (itemValue, itemIndex) => {
               setLang(itemValue);
+              Setting.setI18nConfig(itemValue, false);
               const settingData = {
                 ...settingState,
-                lang: itemValue,
+                language: itemValue,
               };
               await AsyncStorage.setItem(
                 'setting',
@@ -115,6 +125,8 @@ export default (props) => {
               setSettingState(settingData);
               await Sync();
             }}>
+            <Picker.Item value="en" label="English" />
+            <Picker.Item value="fa" label="پارسی" />
             <Picker.Item value="af" label="Afrikaans" />
             <Picker.Item value="al" label="Albanian" />
             <Picker.Item value="ar" label="Arabic" />
@@ -125,9 +137,7 @@ export default (props) => {
             <Picker.Item value="da" label="Danish" />
             <Picker.Item value="de" label="German" />
             <Picker.Item value="el" label="Greek" />
-            <Picker.Item value="en" label="English" />
             <Picker.Item value="eu" label="Basque" />
-            <Picker.Item value="fa" label="Persian (Farsi)" />
             <Picker.Item value="fi" label="Finnish" />
             <Picker.Item value="fr" label="French" />
             <Picker.Item value="gl" label="Galician" />

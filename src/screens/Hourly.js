@@ -7,6 +7,7 @@ import Hour from '../components/Hour';
 
 import Forecast from '../helpers/Forecast';
 import Location from '../helpers/Location';
+import Setting from '../helpers/Setting';
 
 import {SetForecast} from '../store/action/Forecast';
 import {SetLocation, SetGeo} from '../store/action/Location';
@@ -76,9 +77,11 @@ export default function Hourly() {
               loop
             />
             <Text style={{fontSize: 20, fontWeight: 'bold', color: 'white'}}>
-              No Data!
+              {Setting.Translate('noData')}
             </Text>
-            <Text style={{color: 'white'}}>Pull down to refresh.</Text>
+            <Text style={{color: 'white'}}>
+              {Setting.Translate('pullDownRefresh')}
+            </Text>
           </View>
         }
       />

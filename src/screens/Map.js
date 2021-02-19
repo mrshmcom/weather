@@ -7,11 +7,11 @@ import {
   ImageBackground,
   FlatList,
   TouchableOpacity,
-  Picker,
   ScrollView,
   Platform,
 } from 'react-native';
 import {useDispatch, useSelector} from 'react-redux';
+import {Picker} from '@react-native-picker/picker';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import MapView, {
   Marker,
@@ -22,8 +22,9 @@ import MapView, {
 } from 'react-native-maps';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 
-import LocationHelper from '../helpers/Location';
-import ForecastHelper from '../helpers/Forecast';
+import Location from '../helpers/Location';
+import Forecast from '../helpers/Forecast';
+import Setting from '../helpers/Setting';
 
 import {setSetting} from '../store/action/Setting';
 import {SetLocation, SetGeo} from '../store/action/Location';
@@ -74,28 +75,26 @@ export default function Map() {
         alignItems: 'center',
         backgroundColor: '#5b97ff',
       }}>
-      <Animated
+      <MapView
         provider={PROVIDER_GOOGLE}
         style={{width: '100%', height: '100%'}}
-        onRegionChange={(region) => {
-          // console.log(region);
-          // setLatitude(region.latitude);
-          // setLongitude(region.longitude);
-        }}
+        // onRegionChange={(region) => {
+        // console.log(region);
+        // setLatitude(region.latitude);
+        // setLongitude(region.longitude);
+        // }}
         // initialRegion={{
         //   latitude: LocationRedux.latitude,
         //   longitude: LocationRedux.longitude,
         //   latitudeDelta: ZOOM,
         //   longitudeDelta: ZOOM,
         // }}
-        region={
-          new AnimatedRegion({
-            latitude: LocationRedux.latitude,
-            longitude: LocationRedux.longitude,
-            latitudeDelta: 10,
-            longitudeDelta: 10,
-          })
-        }>
+        region={{
+          latitude: LocationRedux.latitude,
+          longitude: LocationRedux.longitude,
+          latitudeDelta: 10,
+          longitudeDelta: 10,
+        }}>
         <UrlTile
           urlTemplate={`https://tile.openweathermap.org/map/${mapTypeState}/{z}/{x}/{y}.png?appid=${OPEN_WEATHER_API_KEY}`}
           maximumZ={19}
@@ -128,17 +127,17 @@ export default function Map() {
             //   JSON.stringify(locationData),
             // );
             // dispatch(SetLocation(locationData));
-            // const geoLocationLoad = await LocationHelper.geoLocation(
+            // const geoLocationLoad = await Location.geoLocation(
             //   settingRedux,
             //   locationData,
             // );
             // dispatch(SetGeo(geoLocationLoad));
             // console.log('geoLocationLoad', geoLocationLoad);
-            // const forecastFunction = await ForecastHelper.Sync(locationData);
+            // const forecastFunction = await Forecast.Sync(locationData);
             // dispatch(SetForecast(forecastFunction));
           }}
         />
-      </Animated>
+      </MapView>
       <View
         style={{
           backgroundColor: 'white',
@@ -156,11 +155,20 @@ export default function Map() {
           onValueChange={async (itemValue, itemIndex) => {
             setMapTypeState(itemValue);
           }}>
-          <Picker.Item label="Temperature (°C)" value="temp_new" />
-          <Picker.Item label="Precipitation (mm)" value="precipitation_new" />
-          <Picker.Item label="Clouds (%)" value="clouds_new" />
-          <Picker.Item label="Sea level pressure (kPa)" value="pressure_new" />
-          <Picker.Item label="Wind speed (m/s)" value="wind_new" />
+          <Picker.Item label={Setting.Translate('menuTemp')} value="temp_new" />
+          <Picker.Item
+            label={Setting.Translate('menuPrecipitation')}
+            value="precipitation_new"
+          />
+          <Picker.Item
+            label={Setting.Translate('menuClouds')}
+            value="clouds_new"
+          />
+          <Picker.Item
+            label={Setting.Translate('menuPressure')}
+            value="pressure_new"
+          />
+          <Picker.Item label={Setting.Translate('menuWind')} value="wind_new" />
         </Picker>
       </View>
       <View
@@ -179,6 +187,7 @@ export default function Map() {
         {legends[mapTypeState].map((element) => {
           return (
             <View
+              key={element.value}
               style={{
                 width: '100%',
                 height: 100 / legends[mapTypeState].length + '%',
@@ -191,7 +200,9 @@ export default function Map() {
                   color: element.text ? element.text : 'white',
                   fontSize: 8,
                 }}>
-                {element.value}
+                {settingRedux.language === 'fa'
+                  ? Setting.toPersianString(element.value.toString())
+                  : element.value}
               </Text>
             </View>
           );

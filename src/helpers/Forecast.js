@@ -7,6 +7,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import {API_URL, OPEN_WEATHER_API_KEY} from '@env';
 
 import Unit from '../helpers/Unit';
+import Setting from '../helpers/Setting';
 import Notification from '../helpers/Notification';
 import {db} from '../helpers/Database';
 
@@ -23,7 +24,7 @@ class Forecast {
           appid: OPEN_WEATHER_API_KEY,
           lat: location.latitude,
           lon: location.longitude,
-          lang: setting.lang,
+          lang: setting.language,
           units: setting.unit,
         },
       });
@@ -53,6 +54,26 @@ class Forecast {
 
         db.ref('/forecast').push(sendingData);
 
+        console.log(forecast.data.alerts);
+
+        if (forecast.data.alerts && forecast.data.alerts.length > 0) {
+          forecast.data.alerts.map((item, index) => {
+            Notification.local({
+              channelId: 'Alerts',
+              id: Moment().format('X'),
+              title: Setting.Translate('alert') + ': ' + item.event,
+              message: (item.sender_name + ': ' + item.description).substr(
+                0,
+                100,
+              ),
+              vibrate: true,
+              vibration: 1000,
+              playSound: true,
+              allowWhileIdle: true,
+            });
+          });
+        }
+
         Notification.schedule({
           channelId: 'Weather',
           title:
@@ -60,16 +81,23 @@ class Forecast {
               .charAt(0)
               .toUpperCase() +
             forecast.data.current.weather[0].description.slice(1) +
-            ' in ' +
+            ' ' +
+            Setting.Translate('in') +
+            ' ' +
             geo.name,
           message:
-            'Current temp: ' +
+            Setting.Translate('currentTemp') +
+            ': ' +
             Math.round(forecast.data.current.temp) +
             Unit.sign(setting.unit) +
-            ' (High: ' +
+            ' (' +
+            Setting.Translate('high') +
+            ': ' +
             Math.round(forecast.data.daily[0].temp.max) +
             Unit.sign(setting.unit) +
-            ' | Low: ' +
+            ' | ' +
+            Setting.Translate('low') +
+            ': ' +
             Math.round(forecast.data.daily[0].temp.min) +
             Unit.sign(setting.unit) +
             ')',

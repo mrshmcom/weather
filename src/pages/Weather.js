@@ -24,14 +24,13 @@ import SearchItem from '../components/SearchItem';
 import Loading from '../components/Loading';
 import Text from '../components/Text';
 
-import LocationHelper from '../helpers/Location';
-import ForecastHelper from '../helpers/Forecast';
+import Location from '../helpers/Location';
+import Forecast from '../helpers/Forecast';
+import Setting from '../helpers/Setting';
 
 import {setSetting} from '../store/action/Setting';
 import {SetLocation, SetGeo} from '../store/action/Location';
 import {SetForecast} from '../store/action/Forecast';
-
-import Languages from '../languages/Languages.json';
 
 const Tab = createMaterialTopTabNavigator();
 
@@ -58,7 +57,7 @@ export default (props) => {
         setLoading(false);
       }
 
-      const forecastFunction = await ForecastHelper.Sync(locationLoad);
+      const forecastFunction = await Forecast.Sync(locationLoad);
       dispatch(SetForecast(forecastFunction));
       console.log(forecastFunction.current);
     } catch (error) {
@@ -68,11 +67,11 @@ export default (props) => {
 
   const Load = async () => {
     try {
-      const locationLoad = await LocationHelper.load(settingRedux);
+      const locationLoad = await Location.load(settingRedux);
       dispatch(SetLocation(locationLoad));
       console.log('locationLoad', locationLoad);
 
-      const geoLocationLoad = await LocationHelper.geoLocation(
+      const geoLocationLoad = await Location.geoLocation(
         settingRedux,
         locationLoad,
       );
@@ -114,7 +113,7 @@ export default (props) => {
           loop
         />
         <Text style={{color: 'white', marginTop: 20}}>
-          {Languages[settingRedux.lang].noInternetMessage}
+          {Setting.Translate('noInternetMessage')}
         </Text>
         <TouchableOpacity
           style={{
@@ -128,7 +127,7 @@ export default (props) => {
             Load();
           }}>
           <Text style={{color: '#5b97ff'}}>
-            {Languages[settingRedux.lang].reloadButton}
+            {Setting.Translate('reloadButton')}
           </Text>
         </TouchableOpacity>
       </View>
@@ -147,7 +146,7 @@ export default (props) => {
           loop
         />
         <Text style={{color: 'white'}}>
-          {Languages[settingRedux.lang].noDataMessage}
+          {Setting.Translate('noDataMessage')}
         </Text>
         <TouchableOpacity
           style={{
@@ -161,7 +160,7 @@ export default (props) => {
             Load();
           }}>
           <Text style={{color: '#5b97ff'}}>
-            {Languages[settingRedux.lang].reloadButton}
+            {Setting.Translate('reloadButton')}
           </Text>
         </TouchableOpacity>
       </View>
@@ -188,12 +187,12 @@ export default (props) => {
           />
           <TextInput
             ref={searchInput}
-            placeholder={Languages[settingRedux.lang].searchPlaceholder}
+            placeholder={Setting.Translate('searchPlaceholder')}
             value={searchField}
             onChangeText={async (value) => {
               setSearchField(value);
               if (value.length > 1) {
-                setSearchResult(await LocationHelper.search(value));
+                setSearchResult(await Location.search(value));
               }
             }}
             style={{
@@ -248,18 +247,16 @@ export default (props) => {
                   JSON.stringify(settingData),
                 );
 
-                const locationLoad = await LocationHelper.load(settingData);
+                const locationLoad = await Location.load(settingData);
                 dispatch(SetLocation(locationLoad));
 
-                const geoLocationLoad = await LocationHelper.geoLocation(
+                const geoLocationLoad = await Location.geoLocation(
                   settingData,
                   locationLoad,
                 );
                 dispatch(SetGeo(geoLocationLoad));
 
-                const forecastFunction = await ForecastHelper.Sync(
-                  locationLoad,
-                );
+                const forecastFunction = await Forecast.Sync(locationLoad);
                 dispatch(SetForecast(forecastFunction));
 
                 setSearchLoading(false);
@@ -279,22 +276,22 @@ export default (props) => {
         <Tab.Screen
           name="Now"
           component={Now}
-          options={{tabBarLabel: Languages[settingRedux.lang].tabNow}}
+          options={{tabBarLabel: Setting.Translate('tabNow')}}
         />
         <Tab.Screen
           name="Hourly"
           component={Hourly}
-          options={{tabBarLabel: Languages[settingRedux.lang].tabHourly}}
+          options={{tabBarLabel: Setting.Translate('tabHourly')}}
         />
         <Tab.Screen
           name="Daily"
           component={Daily}
-          options={{tabBarLabel: Languages[settingRedux.lang].tabDaily}}
+          options={{tabBarLabel: Setting.Translate('tabDaily')}}
         />
         <Tab.Screen
           name="Map"
           component={Map}
-          options={{tabBarLabel: Languages[settingRedux.lang].tabMap}}
+          options={{tabBarLabel: Setting.Translate('tabMap')}}
         />
       </Tab.Navigator>
       {searchResult.length > 0 ? (
@@ -310,9 +307,10 @@ export default (props) => {
             borderBottomRightRadius: 3,
             borderBottomLeftRadius: 3,
           }}>
-          {searchResult.map((item) => {
+          {searchResult.map((item, index) => {
             return (
               <SearchItem
+                key={index}
                 item={item}
                 setSearchField={setSearchField}
                 setSearchResult={setSearchResult}
@@ -326,7 +324,7 @@ export default (props) => {
       <Snackbar
         visible={!connected}
         action={{
-          label: Languages[settingRedux.lang].reloadButton,
+          label: Setting.Translate('reloadButton'),
           onPress: () => {
             Load();
           },
@@ -334,7 +332,7 @@ export default (props) => {
         onDismiss={() => {
           console.log('dismiss');
         }}>
-        {Languages[settingRedux.lang].noInternetMessage}
+        {Setting.Translate('noInternetMessage')}
       </Snackbar>
     </View>
   );
