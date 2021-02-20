@@ -1,15 +1,9 @@
 import React from 'react';
-import {
-  Text,
-  View,
-  TouchableOpacity,
-  Linking,
-  Image,
-  ScrollView,
-} from 'react-native';
+import {View, TouchableOpacity, Linking, Image, ScrollView} from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 
 import NavBar from '../components/NavBar';
+import Text from '../components/Text';
 
 import Setting from '../helpers/Setting';
 
@@ -33,9 +27,13 @@ export default (props) => {
               marginVertical: 20,
             }}
           />
-          <Text style={{fontSize: 20, fontWeight: 'bold'}}>Weather</Text>
-          <Text style={{marginTop: 10, color: 'gray'}}>Developing by:</Text>
-          <Text style={{fontWeight: 'bold'}}>Mohammadreza Shahmohammadi</Text>
+          <Text style={{fontSize: 20}}>
+            {Setting.Translate('loadingTitle')}
+          </Text>
+          <Text style={{marginTop: 10, color: 'gray'}}>
+            {Setting.Translate('developing')}
+          </Text>
+          <Text>{Setting.Translate('mrshm')}</Text>
           <View
             style={{
               paddingHorizontal: 20,
@@ -54,7 +52,9 @@ export default (props) => {
               onPress={() => {
                 Linking.openURL('https://mrshm.ir');
               }}>
-              <Text style={{color: 'white'}}>Website</Text>
+              <Text style={{color: 'white'}}>
+                {Setting.Translate('drawerWebsitePage')}
+              </Text>
             </TouchableOpacity>
             <TouchableOpacity
               style={{
@@ -66,7 +66,7 @@ export default (props) => {
               onPress={() => {
                 Linking.openURL('mailto:hi@mrshm.ir');
               }}>
-              <Text style={{color: 'white'}}>Email</Text>
+              <Text style={{color: 'white'}}>{Setting.Translate('mail')}</Text>
             </TouchableOpacity>
             <TouchableOpacity
               style={{
@@ -78,7 +78,9 @@ export default (props) => {
               onPress={() => {
                 navigation.navigate('Support');
               }}>
-              <Text style={{color: 'white'}}>Support</Text>
+              <Text style={{color: 'white'}}>
+                {Setting.Translate('drawerSupportPage')}
+              </Text>
             </TouchableOpacity>
           </View>
         </View>

@@ -17,6 +17,7 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import Forecast from '../helpers/Forecast';
 import Location from '../helpers/Location';
 import Setting from '../helpers/Setting';
+import Localize from '../helpers/Localize';
 import Unit from '../helpers/Unit';
 
 import Icon from '../components/Icon';
@@ -44,11 +45,13 @@ export default () => {
       const locationLoad = await Location.load(SettingRedux);
       dispatch(SetLocation(locationLoad));
 
-      const geoLocationLoad = await Location.geoLocation(
-        SettingRedux,
-        locationLoad,
-      );
-      dispatch(SetGeo(geoLocationLoad));
+      if (SettingRedux.current) {
+        const geoLocationLoad = await Location.geoLocation(locationLoad);
+        dispatch(SetGeo(geoLocationLoad));
+      } else {
+        const geoLocationStore = JSON.parse(await AsyncStorage.getItem('geo'));
+        dispatch(SetGeo(geoLocationStore));
+      }
 
       const forecastFunction = await Forecast.Sync(locationLoad);
       dispatch(SetForecast(forecastFunction));
@@ -73,7 +76,7 @@ export default () => {
       }
     } else {
       setStared(false);
-      await AsyncStorage.setItem('bookmark', JSON.stringify([]));
+      AsyncStorage.setItem('bookmark', JSON.stringify([]));
     }
   };
 
@@ -87,7 +90,7 @@ export default () => {
       text: geoLocationRedux.name,
     });
 
-    await AsyncStorage.setItem('bookmark', JSON.stringify(bookmark));
+    AsyncStorage.setItem('bookmark', JSON.stringify(bookmark));
   };
 
   const UnBookmark = async () => {
@@ -98,7 +101,7 @@ export default () => {
       (x) => x.place_name !== geoLocationRedux.name,
     );
 
-    await AsyncStorage.setItem('bookmark', JSON.stringify(filterBook));
+    AsyncStorage.setItem('bookmark', JSON.stringify(filterBook));
   };
 
   useEffect(() => {
@@ -175,20 +178,21 @@ export default () => {
                 marginLeft: 5,
                 direction: 'ltr',
               }}>
+              {SettingRedux.timeZone !== forecastRedux.timezone
+                ? Setting.Translate('zone') + ': '
+                : ''}
               {SettingRedux.language === 'fa'
-                ? Setting.getMonthName(
-                    Setting.getWeekDayName(
-                      Setting.toPersianString(
+                ? Localize.getMonthName(
+                    Localize.getWeekDayName(
+                      Localize.toPersianString(
                         Jalali(forecastRedux.current.dt, 'X')
-                          .zone(SettingRedux.timeZone)
-                          .locale('fa')
+                          .utcOffset(forecastRedux.timezone_offset / 60)
                           .format('dddd، jD jMMMM، HH:mm'),
                       ),
                     ),
                   )
                 : Moment(forecastRedux.current.dt, 'X')
-                    .zone(SettingRedux.timeZone)
-                    .locale('en')
+                    .utcOffset(forecastRedux.timezone_offset / 60)
                     .format('ddd, MMM Do, h:mm a')}
             </Text>
           </View>
@@ -215,7 +219,7 @@ export default () => {
             }}>
             <Text style={{color: 'white', fontSize: 75}}>
               {SettingRedux.language === 'fa'
-                ? Setting.toPersianString(
+                ? Localize.toPersianString(
                     Math.round(forecastRedux.current.temp).toString(),
                   )
                 : Math.round(forecastRedux.current.temp)}
@@ -234,7 +238,7 @@ export default () => {
             {Setting.Translate('feelsLike') +
               ' ' +
               (SettingRedux.language === 'fa'
-                ? Setting.toPersianString(
+                ? Localize.toPersianString(
                     Math.round(forecastRedux.current.feels_like).toString(),
                   )
                 : Math.round(forecastRedux.current.feels_like)) +
@@ -291,38 +295,38 @@ export default () => {
                         {Setting.Translate('from') +
                           ': ' +
                           (SettingRedux.language === 'fa'
-                            ? Setting.getMonthName(
-                                Setting.getWeekDayName(
-                                  Setting.toPersianString(
+                            ? Localize.getMonthName(
+                                Localize.getWeekDayName(
+                                  Localize.toPersianString(
                                     Jalali(item.start, 'X')
-                                      .zone(SettingRedux.timeZone)
-                                      .locale('fa')
+                                      .utcOffset(
+                                        forecastRedux.timezone_offset / 60,
+                                      )
                                       .format('dddd، jD jMMMM، HH:mm'),
                                   ),
                                 ),
                               )
                             : Moment(item.start, 'X')
-                                .zone(SettingRedux.timeZone)
-                                .locale('en')
+                                .utcOffset(forecastRedux.timezone_offset / 60)
                                 .format('ddd, MMM Do, h:mm a'))}
                       </Text>
                       <Text style={{color: 'white'}}>
                         {Setting.Translate('to') +
                           ': ' +
                           (SettingRedux.language === 'fa'
-                            ? Setting.getMonthName(
-                                Setting.getWeekDayName(
-                                  Setting.toPersianString(
+                            ? Localize.getMonthName(
+                                Localize.getWeekDayName(
+                                  Localize.toPersianString(
                                     Jalali(item.end, 'X')
-                                      .zone(SettingRedux.timeZone)
-                                      .locale('fa')
+                                      .utcOffset(
+                                        forecastRedux.timezone_offset / 60,
+                                      )
                                       .format('dddd، jD jMMMM، HH:mm'),
                                   ),
                                 ),
                               )
                             : Moment(item.end, 'X')
-                                .zone(SettingRedux.timeZone)
-                                .locale('en')
+                                .utcOffset(forecastRedux.timezone_offset / 60)
                                 .format('ddd, MMM Do, h:mm a'))}
                       </Text>
                     </View>
@@ -370,7 +374,7 @@ export default () => {
                 </Text>
                 <Text style={{color: 'white'}}>
                   {(SettingRedux.language === 'fa'
-                    ? Setting.toPersianString(
+                    ? Localize.toPersianString(
                         forecastRedux.current.rain['1h'].toString(),
                       )
                     : forecastRedux.current.rain['1h']) + ' mm'}
@@ -390,7 +394,7 @@ export default () => {
                 </Text>
                 <Text style={{color: 'white'}}>
                   {(SettingRedux.language === 'fa'
-                    ? Setting.toPersianString(
+                    ? Localize.toPersianString(
                         forecastRedux.current.snow['1h'].toString(),
                       )
                     : forecastRedux.current.snow['1h']) + ' mm'}
@@ -409,7 +413,7 @@ export default () => {
               </Text>
               <Text style={{color: 'white'}}>
                 {(SettingRedux.language === 'fa'
-                  ? Setting.toPersianString(
+                  ? Localize.toPersianString(
                       forecastRedux.current.dew_point.toString(),
                     )
                   : forecastRedux.current.dew_point) +
@@ -432,7 +436,7 @@ export default () => {
               </Text>
               <Text style={{color: 'white'}}>
                 {(SettingRedux.language === 'fa'
-                  ? Setting.toPersianString(
+                  ? Localize.toPersianString(
                       forecastRedux.current.humidity.toString(),
                     )
                   : forecastRedux.current.humidity) + '%'}
@@ -454,7 +458,7 @@ export default () => {
               </Text>
               <Text style={{color: 'white'}}>
                 {(SettingRedux.language === 'fa'
-                  ? Setting.toPersianString(
+                  ? Localize.toPersianString(
                       forecastRedux.current.clouds.toString(),
                     )
                   : forecastRedux.current.clouds) + '%'}
@@ -479,7 +483,7 @@ export default () => {
                 <Text style={{color: 'white'}}>
                   {' ' +
                     (SettingRedux.language === 'fa'
-                      ? Setting.toPersianString(
+                      ? Localize.toPersianString(
                           forecastRedux.current.wind_speed.toString(),
                         )
                       : forecastRedux.current.wind_speed) +
@@ -513,7 +517,7 @@ export default () => {
               </Text>
               <Text style={{color: 'white'}}>
                 {(SettingRedux.language === 'fa'
-                  ? Setting.toPersianString(
+                  ? Localize.toPersianString(
                       forecastRedux.current.pressure.toString(),
                     )
                   : forecastRedux.current.pressure) + ' hPa'}
@@ -535,7 +539,7 @@ export default () => {
               </Text>
               <Text style={{color: 'white'}}>
                 {SettingRedux.language === 'fa'
-                  ? Setting.toPersianString(
+                  ? Localize.toPersianString(
                       forecastRedux.current.uvi.toString(),
                     )
                   : forecastRedux.current.uvi}
@@ -553,7 +557,7 @@ export default () => {
               </Text>
               <Text style={{color: 'white'}}>
                 {(SettingRedux.language === 'fa'
-                  ? Setting.toPersianString(
+                  ? Localize.toPersianString(
                       forecastRedux.current.visibility.toString(),
                     )
                   : forecastRedux.current.visibility) + ' m'}
@@ -575,13 +579,13 @@ export default () => {
               </Text>
               <Text style={{color: 'white'}}>
                 {SettingRedux.language === 'fa'
-                  ? Setting.toPersianString(
+                  ? Localize.toPersianString(
                       Moment(forecastRedux.current.sunrise, 'X')
-                        .zone(SettingRedux.timeZone)
+                        .utcOffset(forecastRedux.timezone_offset / 60)
                         .format('HH:mm'),
                     )
                   : Moment(forecastRedux.current.sunrise, 'X')
-                      .zone(SettingRedux.timeZone)
+                      .utcOffset(forecastRedux.timezone_offset / 60)
                       .format('h:mm A')}
               </Text>
             </View>
@@ -601,13 +605,13 @@ export default () => {
               </Text>
               <Text style={{color: 'white'}}>
                 {SettingRedux.language === 'fa'
-                  ? Setting.toPersianString(
+                  ? Localize.toPersianString(
                       Moment(forecastRedux.current.sunset, 'X')
-                        .zone(SettingRedux.timeZone)
+                        .utcOffset(forecastRedux.timezone_offset / 60)
                         .format('HH:mm'),
                     )
                   : Moment(forecastRedux.current.sunset, 'X')
-                      .zone(SettingRedux.timeZone)
+                      .utcOffset(forecastRedux.timezone_offset / 60)
                       .format('h:mm A')}
               </Text>
             </View>
@@ -637,7 +641,7 @@ export default () => {
                 labels: forecastRedux.minutely.map((minute, index) => {
                   return index % 5 === 0
                     ? Moment(minute.dt, 'X')
-                        .zone(SettingRedux.timeZone)
+                        .utcOffset(forecastRedux.timezone_offset / 60)
                         .format('HH:mm')
                     : '';
                 }),

@@ -1,30 +1,15 @@
-import React, {useState, useEffect, useRef} from 'react';
-import {
-  Text,
-  View,
-  ActivityIndicator,
-  Image,
-  ImageBackground,
-  FlatList,
-  TouchableOpacity,
-  ScrollView,
-  Platform,
-} from 'react-native';
+import React, {useState} from 'react';
+import {Text, View, TouchableOpacity} from 'react-native';
 import {useDispatch, useSelector} from 'react-redux';
 import {Picker} from '@react-native-picker/picker';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import MapView, {
-  Marker,
-  UrlTile,
-  AnimatedRegion,
-  Animated,
-  PROVIDER_GOOGLE,
-} from 'react-native-maps';
+import MapView, {Marker, UrlTile, PROVIDER_GOOGLE} from 'react-native-maps';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 
 import Location from '../helpers/Location';
 import Forecast from '../helpers/Forecast';
 import Setting from '../helpers/Setting';
+import Localize from '../helpers/Localize';
 
 import {setSetting} from '../store/action/Setting';
 import {SetLocation, SetGeo} from '../store/action/Location';
@@ -41,33 +26,10 @@ export default function Map() {
   const LocationRedux = useSelector((state) => state.LocationReducer.location);
   const GeoLocationRedux = useSelector((state) => state.LocationReducer.geo);
 
-  const [latitude, setLatitude] = useState(0);
-  const [longitude, setLongitude] = useState(0);
   const [mapTypeState, setMapTypeState] = useState('temp_new');
-  const [loading, setLoading] = useState(true);
   const [ZOOM, setZOOM] = useState(1);
 
-  useEffect(() => {
-    setLoading(true);
-
-    setLatitude(LocationRedux.latitude);
-    setLongitude(LocationRedux.longitude);
-
-    setLoading(false);
-  }, [LocationRedux]);
-
-  return loading ? (
-    <View
-      style={{
-        backgroundColor: '#5b97ff',
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-      }}>
-      <ActivityIndicator size="large" color="white" />
-      <Text style={{color: 'white'}}>Loading</Text>
-    </View>
-  ) : (
+  return (
     <View
       style={{
         flex: 1,
@@ -109,32 +71,34 @@ export default function Map() {
           title={GeoLocationRedux.name}
           description={GeoLocationRedux.name}
           onDragEnd={async (marker) => {
-            // console.log(marker.nativeEvent.coordinate);
-            // const settingData = {
-            //   ...settingRedux,
-            //   current: false,
-            // };
-            // console.log('settingData', settingData);
-            // dispatch(setSetting(settingData));
-            // await AsyncStorage.setItem('setting', JSON.stringify(settingData));
-            // const locationData = {
-            //   latitude: marker.nativeEvent.coordinate.latitude,
-            //   longitude: marker.nativeEvent.coordinate.longitude,
-            // };
-            // console.log('locationData', locationData);
-            // await AsyncStorage.setItem(
-            //   'location',
-            //   JSON.stringify(locationData),
-            // );
-            // dispatch(SetLocation(locationData));
-            // const geoLocationLoad = await Location.geoLocation(
-            //   settingRedux,
-            //   locationData,
-            // );
-            // dispatch(SetGeo(geoLocationLoad));
-            // console.log('geoLocationLoad', geoLocationLoad);
-            // const forecastFunction = await Forecast.Sync(locationData);
-            // dispatch(SetForecast(forecastFunction));
+            try {
+              console.log(marker.nativeEvent.coordinate.latitude);
+              console.log(marker.nativeEvent.coordinate.longitude);
+              const locationData = {
+                latitude: marker.nativeEvent.coordinate.latitude,
+                longitude: marker.nativeEvent.coordinate.longitude,
+              };
+              const settingData = {
+                ...settingRedux,
+                current: false,
+              };
+              console.log('settingData', settingData);
+              dispatch(setSetting(settingData));
+              AsyncStorage.setItem('setting', JSON.stringify(settingData));
+
+              console.log('locationData', locationData);
+              AsyncStorage.setItem('location', JSON.stringify(locationData));
+              dispatch(SetLocation(locationData));
+
+              const geoLocationLoad = await Location.geoLocation(locationData);
+              dispatch(SetGeo(geoLocationLoad));
+              console.log('geoLocationLoad', geoLocationLoad);
+
+              const forecastFunction = await Forecast.Sync(locationData);
+              dispatch(SetForecast(forecastFunction));
+            } catch (error) {
+              console.log(error);
+            }
           }}
         />
       </MapView>
@@ -201,7 +165,7 @@ export default function Map() {
                   fontSize: 8,
                 }}>
                 {settingRedux.language === 'fa'
-                  ? Setting.toPersianString(element.value.toString())
+                  ? Localize.toPersianString(element.value.toString())
                   : element.value}
               </Text>
             </View>

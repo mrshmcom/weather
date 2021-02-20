@@ -1,6 +1,8 @@
 {
     "loadingTitle": "Weather",
     "loadingDescription": "by Mohammadrez",
+    "mrshm": "Mohammadreza Shahmohammadi",
+    "developing": "Developing by:",
     "noInternetMessage": "No internet connection!",
     "noDataMessage": "Unable to fetch data from server!",
     "noLocation": "No Saved Location!",
@@ -51,5 +53,7 @@
     "in": "in",
     "high": "High",
     "low": "Low",
-    "alert": "Alert"
+    "alert": "Alert",
+    "zone": "Local Time",
+    "mail": "Email"
 }

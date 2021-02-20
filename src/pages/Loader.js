@@ -27,7 +27,7 @@ export default (prop) => {
   const {style} = prop;
   const dispatch = useDispatch();
   const dimensions = useWindowDimensions();
-  const isLargeScreen = dimensions.width >= 768;
+  const isLargeScreen = dimensions.width >= 1000;
 
   const [loading, setLoading] = useState(true);
 

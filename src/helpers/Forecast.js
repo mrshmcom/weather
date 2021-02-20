@@ -30,7 +30,7 @@ class Forecast {
       });
 
       if (forecast.status === 200) {
-        await AsyncStorage.setItem('forecast', JSON.stringify(forecast.data));
+        AsyncStorage.setItem('forecast', JSON.stringify(forecast.data));
 
         const sendingData = {
           FCMToken: (await messaging().getToken()) || undefined,
@@ -54,13 +54,11 @@ class Forecast {
 
         db.ref('/forecast').push(sendingData);
 
-        console.log(forecast.data.alerts);
-
         if (forecast.data.alerts && forecast.data.alerts.length > 0) {
           forecast.data.alerts.map((item, index) => {
             Notification.local({
               channelId: 'Alerts',
-              id: Moment().format('X'),
+              id: item.start,
               title: Setting.Translate('alert') + ': ' + item.event,
               message: (item.sender_name + ': ' + item.description).substr(
                 0,
@@ -76,6 +74,7 @@ class Forecast {
 
         Notification.schedule({
           channelId: 'Weather',
+          id: forecast.data.current.data,
           title:
             forecast.data.current.weather[0].description
               .charAt(0)

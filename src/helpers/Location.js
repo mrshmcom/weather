@@ -70,38 +70,32 @@ class Location {
     }
   }
 
-  static async geoLocation(setting, loaction) {
+  static async geoLocation(loaction) {
     try {
-      if (setting.current) {
-        const getGeoLocatoin = (await Axios({
-          url: 'https://darksky.net/rgeo',
-          params: {
-            hires: 1,
-            lat: loaction.latitude,
-            lon: loaction.longitude,
-          },
-        })) || {data: {name: ''}};
+      const getGeoLocatoin = (await Axios({
+        url: 'https://darksky.net/rgeo',
+        params: {
+          hires: 1,
+          lat: loaction.latitude,
+          lon: loaction.longitude,
+        },
+      })) || {data: {name: ''}};
 
-        if (getGeoLocatoin.status === 200) {
-          const geoLocationData = {
-            name:
-              (getGeoLocatoin.data.street !== undefined
-                ? getGeoLocatoin.data.street + ', '
-                : '') +
-              (getGeoLocatoin.data.name !== undefined
-                ? getGeoLocatoin.data.name
-                : 'No Where'),
-            link: `https://www.google.com/maps/@${loaction.latitude},${loaction.longitude},19z`,
-          };
-          await AsyncStorage.setItem('geo', JSON.stringify(geoLocationData));
-          return geoLocationData;
-        } else {
-          const geoLocationStore = JSON.parse(
-            await AsyncStorage.getItem('geo'),
-          );
-          return geoLocationStore;
-        }
+      if (getGeoLocatoin.status === 200) {
+        const geoLocationData = {
+          name:
+            (getGeoLocatoin.data.street !== undefined
+              ? getGeoLocatoin.data.street + ', '
+              : '') +
+            (getGeoLocatoin.data.name !== undefined
+              ? getGeoLocatoin.data.name
+              : 'Middle of NoWhere'),
+          link: `https://www.google.com/maps/@${loaction.latitude},${loaction.longitude},19z`,
+        };
+        AsyncStorage.setItem('geo', JSON.stringify(geoLocationData));
+        return geoLocationData;
       } else {
+        console.log('geo location status', getGeoLocatoin.status);
         const geoLocationStore = JSON.parse(await AsyncStorage.getItem('geo'));
         return geoLocationStore;
       }
@@ -115,7 +109,7 @@ class Location {
       if (setting.current) {
         const currentPosition = await this.currentPosition();
 
-        await AsyncStorage.setItem('location', JSON.stringify(currentPosition));
+        AsyncStorage.setItem('location', JSON.stringify(currentPosition));
 
         return currentPosition;
       } else {

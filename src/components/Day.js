@@ -10,10 +10,11 @@ import Icon from './Icon';
 import Wind from './Wind';
 
 import Setting from '../helpers/Setting';
+import Localize from '../helpers/Localize';
 import Unit from '../helpers/Unit';
 
 export default (props) => {
-  const {data, setting} = props;
+  const {data, setting, zone} = props;
 
   const [collapsed, setCollapsed] = useState(false);
 
@@ -43,17 +44,17 @@ export default (props) => {
           }}>
           <Text style={{color: 'white'}}>
             {setting.language === 'fa'
-              ? Setting.toPersianString(
-                  Setting.getMonthName(
-                    Setting.getWeekDayName(
+              ? Localize.toPersianString(
+                  Localize.getMonthName(
+                    Localize.getWeekDayName(
                       Jalali(data.dt, 'X')
-                        .zone(setting.timeZone)
+                        .utcOffset(zone / 60)
                         .format('dddd، jMMMM jD'),
                     ),
                   ),
                 )
               : Moment(data.dt, 'X')
-                  .zone(setting.timeZone)
+                  .utcOffset(zone / 60)
                   .format('dddd, MMMM D')}
           </Text>
           <View style={{alignItems: 'flex-start', flexDirection: 'row'}}>
@@ -92,12 +93,12 @@ export default (props) => {
             }}>
             <Text style={{color: 'lightpink'}}>
               {(setting.language === 'fa'
-                ? Setting.toPersianString(Math.round(data.temp.max).toString())
+                ? Localize.toPersianString(Math.round(data.temp.max).toString())
                 : Math.round(data.temp.max)) + Unit.sign(setting.unit)}
             </Text>
             <Text style={{color: 'aqua'}}>
               {(setting.language === 'fa'
-                ? Setting.toPersianString(Math.round(data.temp.min).toString())
+                ? Localize.toPersianString(Math.round(data.temp.min).toString())
                 : Math.round(data.temp.min)) + Unit.sign(setting.unit)}
             </Text>
           </View>
@@ -127,7 +128,7 @@ export default (props) => {
             </Text>
             <Text style={{color: 'white'}}>
               {(setting.language === 'fa'
-                ? Setting.toPersianString(
+                ? Localize.toPersianString(
                     Math.round(data.temp.morn) +
                       ' (' +
                       Math.round(data.feels_like.morn) +
@@ -154,7 +155,7 @@ export default (props) => {
             </Text>
             <Text style={{color: 'white'}}>
               {(setting.language === 'fa'
-                ? Setting.toPersianString(
+                ? Localize.toPersianString(
                     Math.round(data.temp.day) +
                       ' (' +
                       Math.round(data.feels_like.day) +
@@ -181,7 +182,7 @@ export default (props) => {
             </Text>
             <Text style={{color: 'white'}}>
               {(setting.language === 'fa'
-                ? Setting.toPersianString(
+                ? Localize.toPersianString(
                     Math.round(data.temp.eve) +
                       ' (' +
                       Math.round(data.feels_like.eve) +
@@ -208,7 +209,7 @@ export default (props) => {
             </Text>
             <Text style={{color: 'white'}}>
               {(setting.language === 'fa'
-                ? Setting.toPersianString(
+                ? Localize.toPersianString(
                     Math.round(data.temp.night) +
                       ' (' +
                       Math.round(data.feels_like.night) +
@@ -231,7 +232,7 @@ export default (props) => {
             </Text>
             <Text style={{color: 'white'}}>
               {(setting.language === 'fa'
-                ? Setting.toPersianString(data.dew_point.toString())
+                ? Localize.toPersianString(data.dew_point.toString())
                 : data.dew_point) + Unit.sign(setting.unit)}
             </Text>
           </View>
@@ -251,7 +252,7 @@ export default (props) => {
             <Text style={{color: 'white'}}>
               {' ' +
                 (setting.language === 'fa'
-                  ? Setting.toPersianString(
+                  ? Localize.toPersianString(
                       Math.round(data.pop * 100).toString(),
                     )
                   : Math.round(data.pop * 100)) +
@@ -271,7 +272,7 @@ export default (props) => {
               <Text style={{color: 'white'}}>
                 {' ' +
                   (setting.language === 'fa'
-                    ? Setting.toPersianString(data.rain.toString())
+                    ? Localize.toPersianString(data.rain.toString())
                     : data.rain) +
                   ' mm'}
               </Text>
@@ -290,7 +291,7 @@ export default (props) => {
               <Text style={{color: 'white'}}>
                 {' ' +
                   (setting.language === 'fa'
-                    ? Setting.toPersianString(data.snow.toString())
+                    ? Localize.toPersianString(data.snow.toString())
                     : data.snow) +
                   ' mm'}
               </Text>
@@ -321,7 +322,7 @@ export default (props) => {
             <Text style={{color: 'white'}}>
               {' ' +
                 (setting.language === 'fa'
-                  ? Setting.toPersianString(data.clouds.toString())
+                  ? Localize.toPersianString(data.clouds.toString())
                   : data.clouds) +
                 '%'}
             </Text>
@@ -343,7 +344,7 @@ export default (props) => {
               <Wind degree={data.wind_deg} size={14} />
               {' ' +
                 (setting.language === 'fa'
-                  ? Setting.toPersianString(data.wind_speed.toString())
+                  ? Localize.toPersianString(data.wind_speed.toString())
                   : data.wind_speed) +
                 ' ' +
                 Unit.speed(setting.unit)}
@@ -364,7 +365,7 @@ export default (props) => {
             </Text>
             <Text style={{color: 'white'}}>
               {(setting.language === 'fa'
-                ? Setting.toPersianString(data.humidity.toString())
+                ? Localize.toPersianString(data.humidity.toString())
                 : data.humidity) + '%'}
             </Text>
           </View>
@@ -383,7 +384,7 @@ export default (props) => {
             </Text>
             <Text style={{color: 'white'}}>
               {(setting.language === 'fa'
-                ? Setting.toPersianString(data.pressure.toString())
+                ? Localize.toPersianString(data.pressure.toString())
                 : data.pressure) + ' hPa'}
             </Text>
           </View>
@@ -402,7 +403,7 @@ export default (props) => {
             </Text>
             <Text style={{color: 'white'}}>
               {setting.language === 'fa'
-                ? Setting.toPersianString(data.uvi.toString())
+                ? Localize.toPersianString(data.uvi.toString())
                 : data.uvi}
             </Text>
           </View>
@@ -421,13 +422,13 @@ export default (props) => {
             </Text>
             <Text style={{color: 'white'}}>
               {setting.language === 'fa'
-                ? Setting.toPersianString(
+                ? Localize.toPersianString(
                     Moment(data.sunrise, 'X')
-                      .zone(setting.timeZone)
+                      .utcOffset(zone / 60)
                       .format('HH:mm'),
                   )
                 : Moment(data.sunrise, 'X')
-                    .zone(setting.timeZone)
+                    .utcOffset(zone / 60)
                     .format('hh:mm A')}
             </Text>
           </View>
@@ -446,13 +447,13 @@ export default (props) => {
             </Text>
             <Text style={{color: 'white'}}>
               {setting.language === 'fa'
-                ? Setting.toPersianString(
+                ? Localize.toPersianString(
                     Moment(data.sunset, 'X')
-                      .zone(setting.timeZone)
+                      .utcOffset(zone / 60)
                       .format('HH:mm'),
                   )
                 : Moment(data.sunset, 'X')
-                    .zone(setting.timeZone)
+                    .utcOffset(zone / 60)
                     .format('hh:mm A')}
             </Text>
           </View>

@@ -10,10 +10,11 @@ import Icon from './Icon';
 import Wind from './Wind';
 
 import Setting from '../helpers/Setting';
+import Localize from '../helpers/Localize';
 import Unit from '../helpers/Unit';
 
 export default (props) => {
-  const {data, setting} = props;
+  const {data, setting, zone} = props;
 
   const [collapsed, setCollapsed] = useState(false);
 
@@ -43,14 +44,16 @@ export default (props) => {
           }}>
           <Text style={{color: 'white'}}>
             {setting.language === 'fa'
-              ? Setting.toPersianString(
-                  Setting.getWeekDayName(
+              ? Localize.toPersianString(
+                  Localize.getWeekDayName(
                     Jalali(data.dt, 'X')
-                      .zone(setting.timeZone)
+                      .utcOffset(setting.timeZone)
                       .format('HH:mm ddd'),
                   ),
                 )
-              : Moment(data.dt, 'X').zone(setting.timeZone).format('HH:mm ddd')}
+              : Moment(data.dt, 'X')
+                  .utcOffset(zone / 60)
+                  .format('HH:mm ddd')}
           </Text>
         </View>
         <View
@@ -96,7 +99,7 @@ export default (props) => {
             }}>
             <Text style={{color: 'white'}}>
               {(setting.language === 'fa'
-                ? Setting.toPersianString(
+                ? Localize.toPersianString(
                     Math.round(data.temp) +
                       ' (' +
                       Math.round(data.feels_like) +
@@ -134,7 +137,7 @@ export default (props) => {
             </Text>
             <Text style={{color: 'white'}}>
               {(setting.language === 'fa'
-                ? Setting.toPersianString(data.humidity.toString())
+                ? Localize.toPersianString(data.humidity.toString())
                 : data.humidity) + '%'}
             </Text>
           </View>
@@ -153,7 +156,7 @@ export default (props) => {
             </Text>
             <Text style={{color: 'white'}}>
               {(setting.language === 'fa'
-                ? Setting.toPersianString(data.clouds.toString())
+                ? Localize.toPersianString(data.clouds.toString())
                 : data.clouds) + '%'}
             </Text>
           </View>
@@ -172,7 +175,7 @@ export default (props) => {
             </Text>
             <Text style={{color: 'white'}}>
               {(setting.language === 'fa'
-                ? Setting.toPersianString(Math.round(data.pop * 100).toString())
+                ? Localize.toPersianString(Math.round(data.pop * 100).toString())
                 : Math.round(data.pop * 100)) + '%'}
             </Text>
           </View>
@@ -188,7 +191,7 @@ export default (props) => {
               </Text>
               <Text style={{color: 'white'}}>
                 {(setting.language === 'fa'
-                  ? Setting.toPersianString(data.rain['1h'].toString())
+                  ? Localize.toPersianString(data.rain['1h'].toString())
                   : data.rain['1h']) + ' mm'}
               </Text>
             </View>
@@ -205,7 +208,7 @@ export default (props) => {
               </Text>
               <Text style={{color: 'white'}}>
                 {(setting.language === 'fa'
-                  ? Setting.toPersianString(data.snow['1h'].toString())
+                  ? Localize.toPersianString(data.snow['1h'].toString())
                   : data.snow['1h']) + ' mm'}
               </Text>
             </View>
@@ -221,7 +224,7 @@ export default (props) => {
             </Text>
             <Text style={{color: 'white'}}>
               {(setting.language === 'fa'
-                ? Setting.toPersianString(data.dew_point.toString())
+                ? Localize.toPersianString(data.dew_point.toString())
                 : data.dew_point) + Unit.sign(setting.unit)}
             </Text>
           </View>
@@ -251,7 +254,7 @@ export default (props) => {
               <Wind degree={data.wind_deg} size={14} />
               {' ' +
                 (setting.language === 'fa'
-                  ? Setting.toPersianString(data.wind_speed.toString())
+                  ? Localize.toPersianString(data.wind_speed.toString())
                   : data.wind_speed) +
                 ' ' +
                 Unit.speed(setting.unit)}
@@ -272,7 +275,7 @@ export default (props) => {
             </Text>
             <Text style={{color: 'white'}}>
               {(setting.language === 'fa'
-                ? Setting.toPersianString(data.pressure.toString())
+                ? Localize.toPersianString(data.pressure.toString())
                 : data.pressure) + ' hPa'}
             </Text>
           </View>
@@ -287,7 +290,7 @@ export default (props) => {
             </Text>
             <Text style={{color: 'white'}}>
               {(setting.language === 'fa'
-                ? Setting.toPersianString(data.visibility.toString())
+                ? Localize.toPersianString(data.visibility.toString())
                 : data.visibility) + ' m'}
             </Text>
           </View>
@@ -306,7 +309,7 @@ export default (props) => {
             </Text>
             <Text style={{color: 'white'}}>
               {setting.language === 'fa'
-                ? Setting.toPersianString(data.uvi.toString())
+                ? Localize.toPersianString(data.uvi.toString())
                 : data.uvi}
             </Text>
           </View>

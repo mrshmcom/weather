@@ -1,6 +1,7 @@
 import React, {useState} from 'react';
 import {FlatList, RefreshControl, Text, View} from 'react-native';
 import {useDispatch, useSelector} from 'react-redux';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import LottieView from 'lottie-react-native';
 
 import Day from '../components/Day';
@@ -27,11 +28,13 @@ export default function Daily() {
       const locationLoad = await Location.load(SettingRedux);
       dispatch(SetLocation(locationLoad));
 
-      const geoLocationLoad = await Location.geoLocation(
-        SettingRedux,
-        locationLoad,
-      );
-      dispatch(SetGeo(geoLocationLoad));
+      if (SettingRedux.current) {
+        const geoLocationLoad = await Location.geoLocation(locationLoad);
+        dispatch(SetGeo(geoLocationLoad));
+      } else {
+        const geoLocationStore = JSON.parse(await AsyncStorage.getItem('geo'));
+        dispatch(SetGeo(geoLocationStore));
+      }
 
       const forecastFunction = await Forecast.Sync(locationLoad);
       dispatch(SetForecast(forecastFunction));
@@ -55,7 +58,13 @@ export default function Daily() {
         data={forecastRedux.daily}
         keyExtractor={(item) => item.dt}
         renderItem={({item, index, separators}) => {
-          return <Day data={item} setting={SettingRedux} />;
+          return (
+            <Day
+              data={item}
+              setting={SettingRedux}
+              zone={forecastRedux.timezone_offset}
+            />
+          );
         }}
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={Sync} />

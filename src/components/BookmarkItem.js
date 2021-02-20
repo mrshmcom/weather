@@ -30,7 +30,7 @@ export default (props) => {
       } else {
       }
     } else {
-      await AsyncStorage.setItem('bookmark', JSON.stringify([]));
+      AsyncStorage.setItem('bookmark', JSON.stringify([]));
     }
   };
 
@@ -39,7 +39,7 @@ export default (props) => {
 
     bookmark = bookmark.filter((x) => x.place_name !== item.place_name);
 
-    await AsyncStorage.setItem('bookmark', JSON.stringify(bookmark));
+    AsyncStorage.setItem('bookmark', JSON.stringify(bookmark));
 
     LoadLocations();
   };
@@ -74,20 +74,20 @@ export default (props) => {
           current: false,
         };
         dispatch(setSetting(settingData));
-        await AsyncStorage.setItem('setting', JSON.stringify(settingData));
+        AsyncStorage.setItem('setting', JSON.stringify(settingData));
 
         const locationData = {
           latitude: item.center[1],
           longitude: item.center[0],
         };
-        await AsyncStorage.setItem('location', JSON.stringify(locationData));
+        AsyncStorage.setItem('location', JSON.stringify(locationData));
         dispatch(SetLocation(locationData));
 
         const geoLocationData = {
           name: item.place_name,
           link: `https://www.google.com/maps/@${locationData.latitude},${locationData.longitude},19z`,
         };
-        await AsyncStorage.setItem('geo', JSON.stringify(geoLocationData));
+        AsyncStorage.setItem('geo', JSON.stringify(geoLocationData));
         dispatch(SetGeo(geoLocationData));
 
         const forecastFunction = await ForecastHelper.Sync(locationData);

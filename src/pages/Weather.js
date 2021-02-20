@@ -67,16 +67,20 @@ export default (props) => {
 
   const Load = async () => {
     try {
+      setFetching(true);
       const locationLoad = await Location.load(settingRedux);
       dispatch(SetLocation(locationLoad));
       console.log('locationLoad', locationLoad);
 
-      const geoLocationLoad = await Location.geoLocation(
-        settingRedux,
-        locationLoad,
-      );
-      dispatch(SetGeo(geoLocationLoad));
-      console.log('geoLocationLoad', geoLocationLoad);
+      if (settingRedux.current) {
+        const geoLocationLoad = await Location.geoLocation(locationLoad);
+        dispatch(SetGeo(geoLocationLoad));
+        console.log('geoLocationLoad', geoLocationLoad);
+      } else {
+        const geoLocationStore = JSON.parse(await AsyncStorage.getItem('geo'));
+        dispatch(SetGeo(geoLocationStore));
+        console.log('geoLocationLoad', geoLocationStore);
+      }
 
       await LoadForecast(locationLoad);
 
@@ -231,35 +235,47 @@ export default (props) => {
           ) : (
             <TouchableOpacity
               onPress={async () => {
-                setSearchLoading(true);
-                Keyboard.dismiss();
-                searchInput.current.blur();
-                searchInput.current.clear();
-                setSearchField('');
-                setSearchResult([]);
-                const settingData = {
-                  ...settingRedux,
-                  current: true,
-                };
-                dispatch(setSetting(settingData));
-                await AsyncStorage.setItem(
-                  'setting',
-                  JSON.stringify(settingData),
-                );
+                try {
+                  setSearchLoading(true);
+                  Keyboard.dismiss();
+                  searchInput.current.blur();
+                  searchInput.current.clear();
+                  setSearchField('');
+                  setSearchResult([]);
+                  const settingData = {
+                    ...settingRedux,
+                    current: true,
+                  };
+                  console.log('settingData', settingData);
+                  dispatch(setSetting(settingData));
+                  AsyncStorage.setItem('setting', JSON.stringify(settingData));
 
-                const locationLoad = await Location.load(settingData);
-                dispatch(SetLocation(locationLoad));
+                  const locationLoad = await Location.load(settingData);
+                  dispatch(SetLocation(locationLoad));
+                  console.log('locationLoad', locationLoad);
 
-                const geoLocationLoad = await Location.geoLocation(
-                  settingData,
-                  locationLoad,
-                );
-                dispatch(SetGeo(geoLocationLoad));
+                  if (settingData.current) {
+                    const geoLocationLoad = await Location.geoLocation(
+                      locationLoad,
+                    );
+                    dispatch(SetGeo(geoLocationLoad));
+                    console.log('geoLocationLoad', geoLocationLoad);
+                  } else {
+                    const geoLocationStore = JSON.parse(
+                      await AsyncStorage.getItem('geo'),
+                    );
+                    dispatch(SetGeo(geoLocationStore));
+                    console.log('geoLocationStore', geoLocationStore);
+                  }
 
-                const forecastFunction = await Forecast.Sync(locationLoad);
-                dispatch(SetForecast(forecastFunction));
+                  const forecastFunction = await Forecast.Sync(locationLoad);
+                  dispatch(SetForecast(forecastFunction));
 
-                setSearchLoading(false);
+                  setSearchLoading(false);
+                } catch (error) {
+                  setSearchLoading(false);
+                  console.log(error);
+                }
               }}>
               <MaterialIcons name="my-location" size={24} color="gray" />
             </TouchableOpacity>

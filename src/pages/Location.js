@@ -15,15 +15,19 @@ export default (props) => {
   const [locations, setLocations] = useState([]);
 
   const LoadLocations = async () => {
-    setRefreshing(true);
-    const bookmark = JSON.parse(await AsyncStorage.getItem('bookmark'));
+    try {
+      setRefreshing(true);
+      const bookmark = JSON.parse(await AsyncStorage.getItem('bookmark'));
 
-    if (bookmark) {
-      setLocations(bookmark);
-    } else {
-      await AsyncStorage.setItem('bookmark', JSON.stringify([]));
+      if (bookmark) {
+        setLocations(bookmark);
+      } else {
+        AsyncStorage.setItem('bookmark', JSON.stringify([]));
+      }
+      setRefreshing(false);
+    } catch (error) {
+      console.log(error);
     }
-    setRefreshing(false);
   };
 
   useEffect(() => {

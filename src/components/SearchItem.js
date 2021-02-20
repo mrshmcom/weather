@@ -26,39 +26,53 @@ export default (props) => {
   const [stared, setStared] = useState(false);
 
   const checkStar = async () => {
-    const bookmark = JSON.parse(await AsyncStorage.getItem('bookmark'));
-    if (bookmark) {
-      const filterBook = bookmark.filter(
-        (x) => x.place_name === item.place_name,
-      );
+    try {
+      const bookmark = JSON.parse(await AsyncStorage.getItem('bookmark'));
+      if (bookmark) {
+        const filterBook = bookmark.filter(
+          (x) => x.place_name === item.place_name,
+        );
 
-      if (filterBook.length > 0) {
-        setStared(true);
+        if (filterBook.length > 0) {
+          setStared(true);
+        } else {
+          setStared(false);
+        }
       } else {
         setStared(false);
+        AsyncStorage.setItem('bookmark', JSON.stringify([]));
       }
-    } else {
-      setStared(false);
-      await AsyncStorage.setItem('bookmark', JSON.stringify([]));
+    } catch (error) {
+      console.log(error);
     }
   };
 
   const Bookmark = async () => {
-    setStared(true);
-    const bookmark = JSON.parse(await AsyncStorage.getItem('bookmark'));
+    try {
+      setStared(true);
+      const bookmark = JSON.parse(await AsyncStorage.getItem('bookmark'));
 
-    bookmark.push(item);
+      bookmark.push(item);
 
-    await AsyncStorage.setItem('bookmark', JSON.stringify(bookmark));
+      AsyncStorage.setItem('bookmark', JSON.stringify(bookmark));
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   const UnBookmark = async () => {
-    setStared(false);
-    const bookmark = JSON.parse(await AsyncStorage.getItem('bookmark'));
+    try {
+      setStared(false);
+      const bookmark = JSON.parse(await AsyncStorage.getItem('bookmark'));
 
-    const filterBook = bookmark.filter((x) => x.place_name !== item.place_name);
+      const filterBook = bookmark.filter(
+        (x) => x.place_name !== item.place_name,
+      );
 
-    await AsyncStorage.setItem('bookmark', JSON.stringify(filterBook));
+      AsyncStorage.setItem('bookmark', JSON.stringify(filterBook));
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   useEffect(() => {
@@ -72,37 +86,42 @@ export default (props) => {
         borderTopColor: '#eeeeee',
       }}
       onPress={async () => {
-        setSearchLoading(true);
-        Keyboard.dismiss();
-        searchInput.current.blur();
-        // searchInput.current.clear();
-        setSearchField('');
-        setSearchResult([]);
-        const settingData = {
-          ...settingRedux,
-          current: false,
-        };
-        dispatch(setSetting(settingData));
-        await AsyncStorage.setItem('setting', JSON.stringify(settingData));
+        try {
+          setSearchLoading(true);
+          Keyboard.dismiss();
+          searchInput.current.blur();
+          // searchInput.current.clear();
+          setSearchField('');
+          setSearchResult([]);
+          const settingData = {
+            ...settingRedux,
+            current: false,
+          };
+          dispatch(setSetting(settingData));
+          AsyncStorage.setItem('setting', JSON.stringify(settingData));
 
-        const locationData = {
-          latitude: item.center[1],
-          longitude: item.center[0],
-        };
-        await AsyncStorage.setItem('location', JSON.stringify(locationData));
-        dispatch(SetLocation(locationData));
+          const locationData = {
+            latitude: item.center[1],
+            longitude: item.center[0],
+          };
+          AsyncStorage.setItem('location', JSON.stringify(locationData));
+          dispatch(SetLocation(locationData));
 
-        const geoLocationData = {
-          name: item.place_name,
-          link: `https://www.google.com/maps/@${locationData.latitude},${locationData.longitude},19z`,
-        };
-        await AsyncStorage.setItem('geo', JSON.stringify(geoLocationData));
-        dispatch(SetGeo(geoLocationData));
+          const geoLocationData = {
+            name: item.place_name,
+            link: `https://www.google.com/maps/@${locationData.latitude},${locationData.longitude},19z`,
+          };
+          AsyncStorage.setItem('geo', JSON.stringify(geoLocationData));
+          dispatch(SetGeo(geoLocationData));
 
-        const forecastFunction = await ForecastHelper.Sync(locationData);
-        dispatch(SetForecast(forecastFunction));
+          const forecastFunction = await ForecastHelper.Sync(locationData);
+          dispatch(SetForecast(forecastFunction));
 
-        setSearchLoading(false);
+          setSearchLoading(false);
+        } catch (error) {
+          setSearchLoading(false);
+          console.log(error);
+        }
       }}
       title={item.text}
       description={item.place_name}

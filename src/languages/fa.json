@@ -1,6 +1,8 @@
 {
-    "loadingTitle": "هواشناسی",
+    "loadingTitle": "هواشناس",
     "loadingDescription": "با محمدرضا",
+    "mrshm": "محمدرضا شاه محمدی",
+    "developing": "توسعه دهنده:",
     "noInternetMessage": "اتصال به اینترت قطع می‌باشد!",
     "noDataMessage": "اتصال به سرور برقرار نشد!",
     "noLocation": "هنوز مکانی نشان نشده است!",
@@ -14,7 +16,7 @@
     "drawerAboutPage": "درباره برنامه",
     "drawerSharePage": "به‌اشتراک‌گذاری",
     "drawerWebsitePage": "وبسایت",
-    "shareAppMessage": "یه اپلیکیشن خیلی زیبا و خوب پیش بینی آب و هوا پیدا کردم. از اینجا میتونی بگیریش:",
+    "shareAppMessage": "یه اپلیکیشن پیش بینی آب و هوای خیلی زیبا و خوب پیدا کردم. از اینجا میتونی بگیریش:",
     "searchPlaceholder": "جست‌وجو",
     "tabNow": "الان",
     "tabHourly": "ساعتی",
@@ -51,5 +53,7 @@
     "in": "در",
     "high": "حداکثر",
     "low": "حداقل",
-    "alert": "هشدار"
+    "alert": "هشدار",
+    "zone": "زمان محلی",
+    "mail": "ایمیل"
 }

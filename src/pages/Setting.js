@@ -35,11 +35,13 @@ export default (props) => {
       const locationLoad = await Location.load(settingState);
       dispatch(SetLocation(locationLoad));
 
-      const geoLocationLoad = await Location.geoLocation(
-        settingState,
-        locationLoad,
-      );
-      dispatch(SetGeo(geoLocationLoad));
+      if (settingState.current) {
+        const geoLocationLoad = await Location.geoLocation(locationLoad);
+        dispatch(SetGeo(geoLocationLoad));
+      } else {
+        const geoLocationStore = JSON.parse(await AsyncStorage.getItem('geo'));
+        dispatch(SetGeo(geoLocationStore));
+      }
 
       const forecastFunction = await Forecast.Sync(locationLoad);
       dispatch(SetForecast(forecastFunction));
@@ -80,10 +82,7 @@ export default (props) => {
                 ...settingState,
                 unit: itemValue,
               };
-              await AsyncStorage.setItem(
-                'setting',
-                JSON.stringify(settingData),
-              );
+              AsyncStorage.setItem('setting', JSON.stringify(settingData));
               dispatch(setSetting(settingData));
               setSettingState(settingData);
               await Sync();
@@ -117,10 +116,7 @@ export default (props) => {
                 ...settingState,
                 language: itemValue,
               };
-              await AsyncStorage.setItem(
-                'setting',
-                JSON.stringify(settingData),
-              );
+              AsyncStorage.setItem('setting', JSON.stringify(settingData));
               dispatch(setSetting(settingData));
               setSettingState(settingData);
               await Sync();
