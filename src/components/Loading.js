@@ -2,7 +2,8 @@ import React from 'react';
 import {ActivityIndicator, Text, View} from 'react-native';
 import LottieView from 'lottie-react-native';
 
-export default () => {
+export default (props) => {
+  const {data} = props;
   return (
     <View
       style={{
@@ -18,6 +19,7 @@ export default () => {
         loop
       />
       <ActivityIndicator size="large" color="white" />
+      <Text style={{color: 'white'}}>{data}</Text>
       <View
         style={{
           marginTop: 50,

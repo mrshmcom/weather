@@ -5,6 +5,8 @@ import {
   View,
   ActivityIndicator,
   Keyboard,
+  ToastAndroid,
+  Text,
 } from 'react-native';
 import {useDispatch, useSelector} from 'react-redux';
 import {Snackbar} from 'react-native-paper';
@@ -22,7 +24,6 @@ import Map from '../screens/Map';
 
 import SearchItem from '../components/SearchItem';
 import Loading from '../components/Loading';
-import Text from '../components/Text';
 
 import Location from '../helpers/Location';
 import Forecast from '../helpers/Forecast';
@@ -40,6 +41,7 @@ export default (props) => {
 
   const settingRedux = useSelector((state) => state.SettingReducer.setting);
 
+  const [data, setData] = useState(true);
   const [loading, setLoading] = useState(true);
   const [fetching, setFetching] = useState(true);
   const [connected, setConnected] = useState(true);
@@ -68,25 +70,31 @@ export default (props) => {
   const Load = async () => {
     try {
       setFetching(true);
+      setData('Loading Location Settings');
       const locationLoad = await Location.load(settingRedux);
       dispatch(SetLocation(locationLoad));
       console.log('locationLoad', locationLoad);
 
       if (settingRedux.current) {
+        setData('Detecting Location by GPS');
         const geoLocationLoad = await Location.geoLocation(locationLoad);
         dispatch(SetGeo(geoLocationLoad));
         console.log('geoLocationLoad', geoLocationLoad);
       } else {
+        setData('Loading Location Data');
         const geoLocationStore = JSON.parse(await AsyncStorage.getItem('geo'));
         dispatch(SetGeo(geoLocationStore));
         console.log('geoLocationLoad', geoLocationStore);
       }
 
+      setData('Get Forecast Data');
       await LoadForecast(locationLoad);
 
       setLoading(false);
     } catch (error) {
       console.log(error);
+
+      ToastAndroid.show(error, ToastAndroid.SHORT, ToastAndroid.CENTER);
 
       setFetching(false);
     }
@@ -101,7 +109,7 @@ export default (props) => {
 
   return loading ? (
     fetching ? (
-      <Loading />
+      <Loading data={data} />
     ) : !connected ? (
       <View
         style={{
@@ -116,7 +124,8 @@ export default (props) => {
           autoPlay
           loop
         />
-        <Text style={{color: 'white', marginTop: 20}}>
+        <Text
+          style={{color: 'white', marginTop: 20, fontFamily: 'IRANSansMobile'}}>
           {Setting.Translate('noInternetMessage')}
         </Text>
         <TouchableOpacity
@@ -130,7 +139,7 @@ export default (props) => {
           onPress={() => {
             Load();
           }}>
-          <Text style={{color: '#5b97ff'}}>
+          <Text style={{color: '#5b97ff', fontFamily: 'IRANSansMobile'}}>
             {Setting.Translate('reloadButton')}
           </Text>
         </TouchableOpacity>
@@ -149,7 +158,7 @@ export default (props) => {
           autoPlay
           loop
         />
-        <Text style={{color: 'white'}}>
+        <Text style={{color: 'white', fontFamily: 'IRANSansMobile'}}>
           {Setting.Translate('noDataMessage')}
         </Text>
         <TouchableOpacity
@@ -163,7 +172,7 @@ export default (props) => {
           onPress={() => {
             Load();
           }}>
-          <Text style={{color: '#5b97ff'}}>
+          <Text style={{color: '#5b97ff', fontFamily: 'IRANSansMobile'}}>
             {Setting.Translate('reloadButton')}
           </Text>
         </TouchableOpacity>
@@ -236,6 +245,11 @@ export default (props) => {
             <TouchableOpacity
               onPress={async () => {
                 try {
+                  ToastAndroid.show(
+                    'Detecting Location...',
+                    ToastAndroid.SHORT,
+                    ToastAndroid.CENTER,
+                  );
                   setSearchLoading(true);
                   Keyboard.dismiss();
                   searchInput.current.blur();
@@ -268,11 +282,22 @@ export default (props) => {
                     console.log('geoLocationStore', geoLocationStore);
                   }
 
+                  ToastAndroid.show(
+                    'Get Forcasting Data',
+                    ToastAndroid.SHORT,
+                    ToastAndroid.CENTER,
+                  );
+
                   const forecastFunction = await Forecast.Sync(locationLoad);
                   dispatch(SetForecast(forecastFunction));
 
                   setSearchLoading(false);
                 } catch (error) {
+                  ToastAndroid.show(
+                    error,
+                    ToastAndroid.SHORT,
+                    ToastAndroid.CENTER,
+                  );
                   setSearchLoading(false);
                   console.log(error);
                 }
@@ -292,22 +317,70 @@ export default (props) => {
         <Tab.Screen
           name="Now"
           component={Now}
-          options={{tabBarLabel: Setting.Translate('tabNow')}}
+          options={{
+            tabBarLabel: (focused, color) => {
+              return (
+                <Text
+                  style={{
+                    color: focused ? 'white' : 'gray',
+                    fontFamily: 'IRANSansMobile',
+                  }}>
+                  {Setting.Translate('tabNow')}
+                </Text>
+              );
+            },
+          }}
         />
         <Tab.Screen
           name="Hourly"
           component={Hourly}
-          options={{tabBarLabel: Setting.Translate('tabHourly')}}
+          options={{
+            tabBarLabel: (focused, color) => {
+              return (
+                <Text
+                  style={{
+                    color: focused ? 'white' : 'gray',
+                    fontFamily: 'IRANSansMobile',
+                  }}>
+                  {Setting.Translate('tabHourly')}
+                </Text>
+              );
+            },
+          }}
         />
         <Tab.Screen
           name="Daily"
           component={Daily}
-          options={{tabBarLabel: Setting.Translate('tabDaily')}}
+          options={{
+            tabBarLabel: (focused, color) => {
+              return (
+                <Text
+                  style={{
+                    color: focused ? 'white' : 'gray',
+                    fontFamily: 'IRANSansMobile',
+                  }}>
+                  {Setting.Translate('tabDaily')}
+                </Text>
+              );
+            },
+          }}
         />
         <Tab.Screen
           name="Map"
           component={Map}
-          options={{tabBarLabel: Setting.Translate('tabMap')}}
+          options={{
+            tabBarLabel: (focused, color) => {
+              return (
+                <Text
+                  style={{
+                    color: focused ? 'white' : 'gray',
+                    fontFamily: 'IRANSansMobile',
+                  }}>
+                  {Setting.Translate('tabMap')}
+                </Text>
+              );
+            },
+          }}
         />
       </Tab.Navigator>
       {searchResult.length > 0 ? (

@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import {View, useWindowDimensions, Linking, Share} from 'react-native';
+import {View, useWindowDimensions, Linking, Share, Text} from 'react-native';
 import {useDispatch} from 'react-redux';
 import {NavigationContainer} from '@react-navigation/native';
 import {
@@ -36,7 +36,13 @@ export default (prop) => {
       <DrawerContentScrollView {...props}>
         <DrawerItemList {...props} />
         <DrawerItem
-          label={Setting.Translate('drawerSharePage')}
+          label={() => {
+            return (
+              <Text style={{fontFamily: 'IRANSansMobile'}}>
+                {Setting.Translate('drawerSharePage')}
+              </Text>
+            );
+          }}
           onPress={() =>
             Share.share({
               message:
@@ -47,7 +53,13 @@ export default (prop) => {
           }
         />
         <DrawerItem
-          label={Setting.Translate('drawerWebsitePage')}
+          label={() => {
+            return (
+              <Text style={{fontFamily: 'IRANSansMobile'}}>
+                {Setting.Translate('drawerWebsitePage')}
+              </Text>
+            );
+          }}
           onPress={() => Linking.openURL('https://weather.mrshm.ir')}
         />
       </DrawerContentScrollView>
@@ -73,7 +85,7 @@ export default (prop) => {
   return (
     <View style={[style, {flex: 1}]}>
       {loading ? (
-        <Loading />
+        <Loading data="Loading Settings" />
       ) : (
         <NavigationContainer>
           <Drawer.Navigator
@@ -92,24 +104,69 @@ export default (prop) => {
               // width: isLargeScreen ? 240 : '100%',
             }}>
             <Drawer.Screen
-              name={Setting.Translate('drawerWeatherPage')}
+              name="Weather"
               component={WeatherPage}
+              options={{
+                drawerLabel: () => {
+                  return (
+                    <Text style={{fontFamily: 'IRANSansMobile'}}>
+                      {Setting.Translate('drawerWeatherPage')}
+                    </Text>
+                  );
+                },
+              }}
             />
             <Drawer.Screen
-              name={Setting.Translate('drawerLocationPage')}
+              name="Locations"
               component={LocationPage}
+              options={{
+                drawerLabel: () => {
+                  return (
+                    <Text style={{fontFamily: 'IRANSansMobile'}}>
+                      {Setting.Translate('drawerLocationPage')}
+                    </Text>
+                  );
+                },
+              }}
             />
             <Drawer.Screen
-              name={Setting.Translate('drawerSettingPage')}
+              name="Setting"
               component={SettingPage}
+              options={{
+                drawerLabel: () => {
+                  return (
+                    <Text style={{fontFamily: 'IRANSansMobile'}}>
+                      {Setting.Translate('drawerSettingPage')}
+                    </Text>
+                  );
+                },
+              }}
             />
             <Drawer.Screen
-              name={Setting.Translate('drawerSupportPage')}
+              name="Support"
               component={SupportPage}
+              options={{
+                drawerLabel: () => {
+                  return (
+                    <Text style={{fontFamily: 'IRANSansMobile'}}>
+                      {Setting.Translate('drawerSupportPage')}
+                    </Text>
+                  );
+                },
+              }}
             />
             <Drawer.Screen
-              name={Setting.Translate('drawerAboutPage')}
+              name="About"
               component={AboutPage}
+              options={{
+                drawerLabel: () => {
+                  return (
+                    <Text style={{fontFamily: 'IRANSansMobile'}}>
+                      {Setting.Translate('drawerAboutPage')}
+                    </Text>
+                  );
+                },
+              }}
             />
           </Drawer.Navigator>
         </NavigationContainer>

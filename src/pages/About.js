@@ -1,9 +1,15 @@
 import React from 'react';
-import {View, TouchableOpacity, Linking, Image, ScrollView} from 'react-native';
+import {
+  View,
+  TouchableOpacity,
+  Linking,
+  Image,
+  ScrollView,
+  Text,
+} from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 
 import NavBar from '../components/NavBar';
-import Text from '../components/Text';
 
 import Setting from '../helpers/Setting';
 
@@ -27,13 +33,20 @@ export default (props) => {
               marginVertical: 20,
             }}
           />
-          <Text style={{fontSize: 20}}>
+          <Text style={{fontSize: 20, fontFamily: 'IRANSansMobile_Bold'}}>
             {Setting.Translate('loadingTitle')}
           </Text>
-          <Text style={{marginTop: 10, color: 'gray'}}>
+          <Text
+            style={{
+              marginTop: 10,
+              color: 'gray',
+              fontFamily: 'IRANSansMobile',
+            }}>
             {Setting.Translate('developing')}
           </Text>
-          <Text>{Setting.Translate('mrshm')}</Text>
+          <Text style={{fontFamily: 'IRANSansMobile_Bold'}}>
+            {Setting.Translate('mrshm')}
+          </Text>
           <View
             style={{
               paddingHorizontal: 20,
@@ -52,7 +65,7 @@ export default (props) => {
               onPress={() => {
                 Linking.openURL('https://mrshm.ir');
               }}>
-              <Text style={{color: 'white'}}>
+              <Text style={{color: 'white', fontFamily: 'IRANSansMobile'}}>
                 {Setting.Translate('drawerWebsitePage')}
               </Text>
             </TouchableOpacity>
@@ -66,7 +79,9 @@ export default (props) => {
               onPress={() => {
                 Linking.openURL('mailto:hi@mrshm.ir');
               }}>
-              <Text style={{color: 'white'}}>{Setting.Translate('mail')}</Text>
+              <Text style={{color: 'white', fontFamily: 'IRANSansMobile'}}>
+                {Setting.Translate('mail')}
+              </Text>
             </TouchableOpacity>
             <TouchableOpacity
               style={{
@@ -78,17 +93,17 @@ export default (props) => {
               onPress={() => {
                 navigation.navigate('Support');
               }}>
-              <Text style={{color: 'white'}}>
+              <Text style={{color: 'white', fontFamily: 'IRANSansMobile'}}>
                 {Setting.Translate('drawerSupportPage')}
               </Text>
             </TouchableOpacity>
           </View>
         </View>
         <View style={{marginHorizontal: 20, marginVertical: 20}}>
-          <Text style={{fontWeight: 'bold'}}>Copyrights</Text>
+          <Text>Copyrights</Text>
           <View style={{marginVertical: 10}}>
             <View style={{flexDirection: 'row', alignItems: 'center'}}>
-              <Text style={{width: 30}}>
+              <Text style={{width: 30, fontFamily: 'IRANSansMobile'}}>
                 <Ionicons name="ios-sunny" size={16} color="black" />
               </Text>
               <Text>Forecast</Text>

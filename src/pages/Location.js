@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from 'react';
-import {Text, View, FlatList, RefreshControl} from 'react-native';
+import {View, FlatList, RefreshControl, Text} from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import LottieView from 'lottie-react-native';
 
@@ -68,10 +68,12 @@ export default (props) => {
               autoPlay
               loop
             />
-            <Text style={{fontSize: 20, fontWeight: 'bold'}}>
+            <Text style={{fontSize: 20, fontFamily: 'IRANSansMobile_Bold'}}>
               {Setting.Translate('noLocation')}
             </Text>
-            <Text>{Setting.Translate('pullDownRefresh')}</Text>
+            <Text style={{fontFamily: 'IRANSansMobile'}}>
+              {Setting.Translate('pullDownRefresh')}
+            </Text>
           </View>
         }
       />

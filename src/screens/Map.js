@@ -162,6 +162,7 @@ export default function Map() {
               <Text
                 style={{
                   color: element.text ? element.text : 'white',
+                  fontFamily: 'IRANSansMobile',
                   fontSize: 8,
                 }}>
                 {settingRedux.language === 'fa'

@@ -1,11 +1,18 @@
 import React, {useEffect, useState} from 'react';
-import {ActivityIndicator, Text, TouchableOpacity, View} from 'react-native';
+import {
+  ActivityIndicator,
+  Text,
+  ToastAndroid,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import {List} from 'react-native-paper';
 import {useDispatch, useSelector} from 'react-redux';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 
 import ForecastHelper from '../helpers/Forecast';
+import SettingHelper from '../helpers/Setting';
 
 import {setSetting} from '../store/action/Setting';
 import {SetLocation, SetGeo} from '../store/action/Location';
@@ -42,6 +49,12 @@ export default (props) => {
     AsyncStorage.setItem('bookmark', JSON.stringify(bookmark));
 
     LoadLocations();
+
+    ToastAndroid.show(
+      'Removed Succeccfuly',
+      ToastAndroid.SHORT,
+      ToastAndroid.CENTER,
+    );
   };
 
   useEffect(() => {
@@ -59,7 +72,9 @@ export default (props) => {
         paddingVertical: 20,
       }}>
       <ActivityIndicator size="small" color="black" style={{marginEnd: 10}} />
-      <Text>Loading Data...</Text>
+      <Text style={{fontFamily: 'IRANSansMobile'}}>
+        {SettingHelper.Translate('loading')}
+      </Text>
     </View>
   ) : (
     <List.Item

@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from 'react';
-import {Text, View} from 'react-native';
+import {View, Text} from 'react-native';
 import {useDispatch, useSelector} from 'react-redux';
 import {Picker} from '@react-native-picker/picker';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -67,7 +67,7 @@ export default (props) => {
           alignItems: 'center',
         }}>
         <View style={{width: '40%'}}>
-          <Text style={{textAlign: 'right'}}>
+          <Text style={{textAlign: 'right', fontFamily: 'IRANSansMobile'}}>
             {Setting.Translate('settingUnit')}
           </Text>
         </View>
@@ -100,7 +100,7 @@ export default (props) => {
           alignItems: 'center',
         }}>
         <View style={{width: '40%'}}>
-          <Text style={{textAlign: 'right'}}>
+          <Text style={{textAlign: 'right', fontFamily: 'IRANSansMobile'}}>
             {Setting.Translate('settingLanguage')}
           </Text>
         </View>

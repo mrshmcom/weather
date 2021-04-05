@@ -32,7 +32,14 @@ export default (props) => {
       </TouchableOpacity>
       <View
         style={{flex: 1, flexDirection: 'row-reverse', alignItems: 'center'}}>
-        <Text style={{color: 'white', fontSize: 14}}>{title}</Text>
+        <Text
+          style={{
+            color: 'white',
+            fontSize: 14,
+            fontFamily: 'IRANSansMobile_Bold',
+          }}>
+          {title}
+        </Text>
       </View>
     </View>
   );

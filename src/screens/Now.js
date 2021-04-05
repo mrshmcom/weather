@@ -5,6 +5,8 @@ import {
   View,
   Dimensions,
   TouchableOpacity,
+  ToastAndroid,
+  Text,
 } from 'react-native';
 import Moment from 'moment';
 import Jalali from 'moment-jalaali';
@@ -22,7 +24,6 @@ import Unit from '../helpers/Unit';
 
 import Icon from '../components/Icon';
 import Wind from '../components/Wind';
-import Text from '../components/Text';
 
 import {SetForecast} from '../store/action/Forecast';
 import {SetLocation, SetGeo} from '../store/action/Location';
@@ -91,6 +92,12 @@ export default () => {
     });
 
     AsyncStorage.setItem('bookmark', JSON.stringify(bookmark));
+
+    ToastAndroid.show(
+      'Bookmarked Succeccfuly',
+      ToastAndroid.SHORT,
+      ToastAndroid.CENTER,
+    );
   };
 
   const UnBookmark = async () => {
@@ -102,6 +109,12 @@ export default () => {
     );
 
     AsyncStorage.setItem('bookmark', JSON.stringify(filterBook));
+
+    ToastAndroid.show(
+      'Removed Succeccfuly',
+      ToastAndroid.SHORT,
+      ToastAndroid.CENTER,
+    );
   };
 
   useEffect(() => {
@@ -138,6 +151,7 @@ export default () => {
                 textAlign: 'center',
                 marginHorizontal: 5,
                 direction: 'ltr',
+                fontFamily: 'IRANSansMobile',
               }}>
               {geoLocationRedux.name}
             </Text>
@@ -173,6 +187,7 @@ export default () => {
             <Ionicons name="ios-time-outline" size={16} color="white" />
             <Text
               style={{
+                fontFamily: 'IRANSansMobile',
                 color: 'white',
                 textAlign: 'center',
                 marginLeft: 5,
@@ -217,14 +232,25 @@ export default () => {
               marginLeft: 10,
               flexDirection: 'row',
             }}>
-            <Text style={{color: 'white', fontSize: 75}}>
+            <Text
+              style={{
+                color: 'white',
+                fontSize: 75,
+                fontFamily: 'IRANSansMobile',
+              }}>
               {SettingRedux.language === 'fa'
                 ? Localize.toPersianString(
                     Math.round(forecastRedux.current.temp).toString(),
                   )
                 : Math.round(forecastRedux.current.temp)}
             </Text>
-            <Text style={{color: 'white', fontSize: 25, marginTop: 10}}>
+            <Text
+              style={{
+                color: 'white',
+                fontSize: 25,
+                marginTop: 10,
+                fontFamily: 'IRANSansMobile',
+              }}>
               {Unit.sign(SettingRedux.unit)}
             </Text>
           </View>
@@ -234,7 +260,7 @@ export default () => {
             marginTop: 20,
             alignItems: 'center',
           }}>
-          <Text style={{color: 'white'}}>
+          <Text style={{color: 'white', fontFamily: 'IRANSansMobile'}}>
             {Setting.Translate('feelsLike') +
               ' ' +
               (SettingRedux.language === 'fa'
@@ -247,7 +273,13 @@ export default () => {
           <View style={{flexDirection: 'row'}}>
             {forecastRedux.current.weather.map((element, index) => {
               return (
-                <Text style={{color: 'white', marginHorizontal: 2}} key={index}>
+                <Text
+                  style={{
+                    color: 'white',
+                    marginHorizontal: 2,
+                    fontFamily: 'IRANSansMobile',
+                  }}
+                  key={index}>
                   {element.description.charAt(0).toUpperCase() +
                     element.description.slice(1)}
                 </Text>
@@ -279,19 +311,19 @@ export default () => {
                         alignItems: 'center',
                         width: '25%',
                       }}>
-                      <Text>
-                        <Ionicons
-                          name="ios-alert-circle"
-                          size={50}
-                          color="white"
-                        />
-                      </Text>
+                      <Ionicons
+                        name="ios-alert-circle"
+                        size={50}
+                        color="white"
+                      />
                     </View>
                     <View style={{width: '75%', alignItems: 'flex-start'}}>
-                      <Text style={{color: 'white'}}>
+                      <Text
+                        style={{color: 'white', fontFamily: 'IRANSansMobile'}}>
                         {Setting.Translate('alert') + ': ' + item.event}
                       </Text>
-                      <Text style={{color: 'white'}}>
+                      <Text
+                        style={{color: 'white', fontFamily: 'IRANSansMobile'}}>
                         {Setting.Translate('from') +
                           ': ' +
                           (SettingRedux.language === 'fa'
@@ -310,7 +342,8 @@ export default () => {
                                 .utcOffset(forecastRedux.timezone_offset / 60)
                                 .format('ddd, MMM Do, h:mm a'))}
                       </Text>
-                      <Text style={{color: 'white'}}>
+                      <Text
+                        style={{color: 'white', fontFamily: 'IRANSansMobile'}}>
                         {Setting.Translate('to') +
                           ': ' +
                           (SettingRedux.language === 'fa'
@@ -340,7 +373,12 @@ export default () => {
                     }}
                   />
                   <View>
-                    <Text style={{textAlign: 'justify', color: 'white'}}>
+                    <Text
+                      style={{
+                        textAlign: 'justify',
+                        color: 'white',
+                        fontFamily: 'IRANSansMobile',
+                      }}>
                       {item.sender_name +
                         ': ' +
                         item.description.replace(/\n/g, '')}
@@ -368,11 +406,11 @@ export default () => {
                   justifyContent: 'space-between',
                   marginBottom: 5,
                 }}>
-                <Text style={{color: 'white'}}>
+                <Text style={{color: 'white', fontFamily: 'IRANSansMobile'}}>
                   <Ionicons name="ios-water" size={14} color="white" />{' '}
                   {Setting.Translate('rain')}
                 </Text>
-                <Text style={{color: 'white'}}>
+                <Text style={{color: 'white', fontFamily: 'IRANSansMobile'}}>
                   {(SettingRedux.language === 'fa'
                     ? Localize.toPersianString(
                         forecastRedux.current.rain['1h'].toString(),
@@ -388,11 +426,11 @@ export default () => {
                   justifyContent: 'space-between',
                   marginBottom: 5,
                 }}>
-                <Text style={{color: 'white'}}>
+                <Text style={{color: 'white', fontFamily: 'IRANSansMobile'}}>
                   <Ionicons name="ios-snow" size={14} color="white" />{' '}
                   {Setting.Translate('snow')}
                 </Text>
-                <Text style={{color: 'white'}}>
+                <Text style={{color: 'white', fontFamily: 'IRANSansMobile'}}>
                   {(SettingRedux.language === 'fa'
                     ? Localize.toPersianString(
                         forecastRedux.current.snow['1h'].toString(),
@@ -407,11 +445,11 @@ export default () => {
                 justifyContent: 'space-between',
                 marginBottom: 5,
               }}>
-              <Text style={{color: 'white'}}>
+              <Text style={{color: 'white', fontFamily: 'IRANSansMobile'}}>
                 <Ionicons name="ios-water-outline" size={14} color="white" />{' '}
                 {Setting.Translate('dewPoint')}
               </Text>
-              <Text style={{color: 'white'}}>
+              <Text style={{color: 'white', fontFamily: 'IRANSansMobile'}}>
                 {(SettingRedux.language === 'fa'
                   ? Localize.toPersianString(
                       forecastRedux.current.dew_point.toString(),
@@ -426,7 +464,7 @@ export default () => {
                 justifyContent: 'space-between',
                 marginBottom: 5,
               }}>
-              <Text style={{color: 'white'}}>
+              <Text style={{color: 'white', fontFamily: 'IRANSansMobile'}}>
                 <MaterialCommunityIcons
                   name="air-humidifier"
                   size={14}
@@ -434,7 +472,7 @@ export default () => {
                 />{' '}
                 {Setting.Translate('humidity')}
               </Text>
-              <Text style={{color: 'white'}}>
+              <Text style={{color: 'white', fontFamily: 'IRANSansMobile'}}>
                 {(SettingRedux.language === 'fa'
                   ? Localize.toPersianString(
                       forecastRedux.current.humidity.toString(),
@@ -448,7 +486,7 @@ export default () => {
                 justifyContent: 'space-between',
                 marginBottom: 5,
               }}>
-              <Text style={{color: 'white'}}>
+              <Text style={{color: 'white', fontFamily: 'IRANSansMobile'}}>
                 <MaterialCommunityIcons
                   name="weather-cloudy"
                   size={14}
@@ -456,7 +494,7 @@ export default () => {
                 />{' '}
                 {Setting.Translate('clouds')}
               </Text>
-              <Text style={{color: 'white'}}>
+              <Text style={{color: 'white', fontFamily: 'IRANSansMobile'}}>
                 {(SettingRedux.language === 'fa'
                   ? Localize.toPersianString(
                       forecastRedux.current.clouds.toString(),
@@ -470,7 +508,7 @@ export default () => {
                 justifyContent: 'space-between',
                 marginBottom: 5,
               }}>
-              <Text style={{color: 'white'}}>
+              <Text style={{color: 'white', fontFamily: 'IRANSansMobile'}}>
                 <MaterialCommunityIcons
                   name="weather-windy"
                   size={14}
@@ -480,7 +518,7 @@ export default () => {
               </Text>
               <View style={{flexDirection: 'row', alignItems: 'center'}}>
                 <Wind degree={forecastRedux.current.wind_deg} size={14} />
-                <Text style={{color: 'white'}}>
+                <Text style={{color: 'white', fontFamily: 'IRANSansMobile'}}>
                   {' ' +
                     (SettingRedux.language === 'fa'
                       ? Localize.toPersianString(
@@ -507,7 +545,7 @@ export default () => {
                 justifyContent: 'space-between',
                 marginBottom: 5,
               }}>
-              <Text style={{color: 'white'}}>
+              <Text style={{color: 'white', fontFamily: 'IRANSansMobile'}}>
                 <MaterialCommunityIcons
                   name="coolant-temperature"
                   size={14}
@@ -515,7 +553,7 @@ export default () => {
                 />{' '}
                 {Setting.Translate('pressure')}
               </Text>
-              <Text style={{color: 'white'}}>
+              <Text style={{color: 'white', fontFamily: 'IRANSansMobile'}}>
                 {(SettingRedux.language === 'fa'
                   ? Localize.toPersianString(
                       forecastRedux.current.pressure.toString(),
@@ -529,7 +567,7 @@ export default () => {
                 justifyContent: 'space-between',
                 marginBottom: 5,
               }}>
-              <Text style={{color: 'white'}}>
+              <Text style={{color: 'white', fontFamily: 'IRANSansMobile'}}>
                 <MaterialCommunityIcons
                   name="weather-sunny-alert"
                   size={14}
@@ -537,7 +575,7 @@ export default () => {
                 />{' '}
                 {Setting.Translate('uvIndex')}
               </Text>
-              <Text style={{color: 'white'}}>
+              <Text style={{color: 'white', fontFamily: 'IRANSansMobile'}}>
                 {SettingRedux.language === 'fa'
                   ? Localize.toPersianString(
                       forecastRedux.current.uvi.toString(),
@@ -551,11 +589,11 @@ export default () => {
                 justifyContent: 'space-between',
                 marginBottom: 5,
               }}>
-              <Text style={{color: 'white'}}>
+              <Text style={{color: 'white', fontFamily: 'IRANSansMobile'}}>
                 <MaterialCommunityIcons name="eye" size={14} color="white" />{' '}
                 {Setting.Translate('visibility')}
               </Text>
-              <Text style={{color: 'white'}}>
+              <Text style={{color: 'white', fontFamily: 'IRANSansMobile'}}>
                 {(SettingRedux.language === 'fa'
                   ? Localize.toPersianString(
                       forecastRedux.current.visibility.toString(),
@@ -569,7 +607,7 @@ export default () => {
                 justifyContent: 'space-between',
                 marginBottom: 5,
               }}>
-              <Text style={{color: 'white'}}>
+              <Text style={{color: 'white', fontFamily: 'IRANSansMobile'}}>
                 <MaterialCommunityIcons
                   name="weather-sunset-up"
                   size={14}
@@ -577,7 +615,7 @@ export default () => {
                 />{' '}
                 {Setting.Translate('sunrise')}
               </Text>
-              <Text style={{color: 'white'}}>
+              <Text style={{color: 'white', fontFamily: 'IRANSansMobile'}}>
                 {SettingRedux.language === 'fa'
                   ? Localize.toPersianString(
                       Moment(forecastRedux.current.sunrise, 'X')
@@ -595,7 +633,7 @@ export default () => {
                 justifyContent: 'space-between',
                 marginBottom: 5,
               }}>
-              <Text style={{color: 'white'}}>
+              <Text style={{color: 'white', fontFamily: 'IRANSansMobile'}}>
                 <MaterialCommunityIcons
                   name="weather-sunset-down"
                   size={14}
@@ -603,7 +641,7 @@ export default () => {
                 />{' '}
                 {Setting.Translate('sunset')}
               </Text>
-              <Text style={{color: 'white'}}>
+              <Text style={{color: 'white', fontFamily: 'IRANSansMobile'}}>
                 {SettingRedux.language === 'fa'
                   ? Localize.toPersianString(
                       Moment(forecastRedux.current.sunset, 'X')
@@ -630,6 +668,7 @@ export default () => {
             }}>
             <Text
               style={{
+                fontFamily: 'IRANSansMobile_Bold',
                 color: '#5b97ff',
                 marginVertical: 10,
               }}>

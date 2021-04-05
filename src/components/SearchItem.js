@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import {TouchableOpacity, View, Keyboard} from 'react-native';
+import {TouchableOpacity, View, Keyboard, ToastAndroid} from 'react-native';
 import {List} from 'react-native-paper';
 import {useDispatch, useSelector} from 'react-redux';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -55,6 +55,12 @@ export default (props) => {
       bookmark.push(item);
 
       AsyncStorage.setItem('bookmark', JSON.stringify(bookmark));
+
+      ToastAndroid.show(
+        'Bookmarked Succeccfuly',
+        ToastAndroid.SHORT,
+        ToastAndroid.CENTER,
+      );
     } catch (error) {
       console.log(error);
     }
@@ -70,6 +76,12 @@ export default (props) => {
       );
 
       AsyncStorage.setItem('bookmark', JSON.stringify(filterBook));
+
+      ToastAndroid.show(
+        'Removed Successfuly',
+        ToastAndroid.SHORT,
+        ToastAndroid.CENTER,
+      );
     } catch (error) {
       console.log(error);
     }

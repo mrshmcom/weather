@@ -1,11 +1,10 @@
 import React, {useState} from 'react';
-import {View, TouchableOpacity} from 'react-native';
+import {View, TouchableOpacity, Text} from 'react-native';
 import Moment from 'moment';
 import Jalali from 'moment-jalaali';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 
-import Text from './Text';
 import Icon from './Icon';
 import Wind from './Wind';
 
@@ -42,7 +41,7 @@ export default (props) => {
             flexDirection: 'column',
             alignItems: 'flex-start',
           }}>
-          <Text style={{color: 'white'}}>
+          <Text style={{color: 'white', fontFamily: 'IRANSansMobile'}}>
             {setting.language === 'fa'
               ? Localize.toPersianString(
                   Localize.getWeekDayName(
@@ -72,7 +71,9 @@ export default (props) => {
             }}>
             {data.weather.map((element, index) => {
               return (
-                <Text style={{color: 'white'}} key={index}>
+                <Text
+                  style={{color: 'white', fontFamily: 'IRANSansMobile'}}
+                  key={index}>
                   {element.description.charAt(0).toUpperCase() +
                     element.description.slice(1)}
                 </Text>
@@ -97,7 +98,7 @@ export default (props) => {
               alignItems: 'flex-end',
               width: '30%',
             }}>
-            <Text style={{color: 'white'}}>
+            <Text style={{color: 'white', fontFamily: 'IRANSansMobile'}}>
               {(setting.language === 'fa'
                 ? Localize.toPersianString(
                     Math.round(data.temp) +
@@ -114,20 +115,22 @@ export default (props) => {
         </View>
       </TouchableOpacity>
       <View
-        style={{
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          overflow: 'hidden',
-          height: collapsed ? 120 : 0,
-          flexDirection: 'row',
-        }}>
+        style={[
+          collapsed ? {minHeight: 100} : {height: 0},
+          {
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            overflow: 'hidden',
+            flexDirection: 'row',
+          },
+        ]}>
         <View style={{width: '47%'}}>
           <View
             style={{
               flexDirection: 'row',
               justifyContent: 'space-between',
             }}>
-            <Text style={{color: 'white'}}>
+            <Text style={{color: 'white', fontFamily: 'IRANSansMobile'}}>
               <MaterialCommunityIcons
                 name="air-humidifier"
                 size={14}
@@ -135,7 +138,7 @@ export default (props) => {
               />{' '}
               {Setting.Translate('humidity')}
             </Text>
-            <Text style={{color: 'white'}}>
+            <Text style={{color: 'white', fontFamily: 'IRANSansMobile'}}>
               {(setting.language === 'fa'
                 ? Localize.toPersianString(data.humidity.toString())
                 : data.humidity) + '%'}
@@ -146,7 +149,7 @@ export default (props) => {
               flexDirection: 'row',
               justifyContent: 'space-between',
             }}>
-            <Text style={{color: 'white'}}>
+            <Text style={{color: 'white', fontFamily: 'IRANSansMobile'}}>
               <MaterialCommunityIcons
                 name="weather-cloudy"
                 size={14}
@@ -154,7 +157,7 @@ export default (props) => {
               />{' '}
               {Setting.Translate('clouds')}
             </Text>
-            <Text style={{color: 'white'}}>
+            <Text style={{color: 'white', fontFamily: 'IRANSansMobile'}}>
               {(setting.language === 'fa'
                 ? Localize.toPersianString(data.clouds.toString())
                 : data.clouds) + '%'}
@@ -165,7 +168,7 @@ export default (props) => {
               flexDirection: 'row',
               justifyContent: 'space-between',
             }}>
-            <Text style={{color: 'white'}}>
+            <Text style={{color: 'white', fontFamily: 'IRANSansMobile'}}>
               <MaterialCommunityIcons
                 name="weather-rainy"
                 size={14}
@@ -173,9 +176,11 @@ export default (props) => {
               />{' '}
               {Setting.Translate('precipitation')}
             </Text>
-            <Text style={{color: 'white'}}>
+            <Text style={{color: 'white', fontFamily: 'IRANSansMobile'}}>
               {(setting.language === 'fa'
-                ? Localize.toPersianString(Math.round(data.pop * 100).toString())
+                ? Localize.toPersianString(
+                    Math.round(data.pop * 100).toString(),
+                  )
                 : Math.round(data.pop * 100)) + '%'}
             </Text>
           </View>
@@ -185,11 +190,11 @@ export default (props) => {
                 flexDirection: 'row',
                 justifyContent: 'space-between',
               }}>
-              <Text style={{color: 'white'}}>
+              <Text style={{color: 'white', fontFamily: 'IRANSansMobile'}}>
                 <Ionicons name="ios-water" size={14} color="white" />{' '}
                 {Setting.Translate('rain')}
               </Text>
-              <Text style={{color: 'white'}}>
+              <Text style={{color: 'white', fontFamily: 'IRANSansMobile'}}>
                 {(setting.language === 'fa'
                   ? Localize.toPersianString(data.rain['1h'].toString())
                   : data.rain['1h']) + ' mm'}
@@ -202,11 +207,11 @@ export default (props) => {
                 flexDirection: 'row',
                 justifyContent: 'space-between',
               }}>
-              <Text style={{color: 'white'}}>
+              <Text style={{color: 'white', fontFamily: 'IRANSansMobile'}}>
                 <Ionicons name="ios-snow" size={14} color="white" />{' '}
                 {Setting.Translate('snow')}
               </Text>
-              <Text style={{color: 'white'}}>
+              <Text style={{color: 'white', fontFamily: 'IRANSansMobile'}}>
                 {(setting.language === 'fa'
                   ? Localize.toPersianString(data.snow['1h'].toString())
                   : data.snow['1h']) + ' mm'}
@@ -218,11 +223,11 @@ export default (props) => {
               flexDirection: 'row',
               justifyContent: 'space-between',
             }}>
-            <Text style={{color: 'white'}}>
+            <Text style={{color: 'white', fontFamily: 'IRANSansMobile'}}>
               <Ionicons name="ios-water-outline" size={14} color="white" />{' '}
               {Setting.Translate('dewPoint')}
             </Text>
-            <Text style={{color: 'white'}}>
+            <Text style={{color: 'white', fontFamily: 'IRANSansMobile'}}>
               {(setting.language === 'fa'
                 ? Localize.toPersianString(data.dew_point.toString())
                 : data.dew_point) + Unit.sign(setting.unit)}
@@ -242,7 +247,7 @@ export default (props) => {
               flexDirection: 'row',
               justifyContent: 'space-between',
             }}>
-            <Text style={{color: 'white'}}>
+            <Text style={{color: 'white', fontFamily: 'IRANSansMobile'}}>
               <MaterialCommunityIcons
                 name="weather-windy"
                 size={14}
@@ -250,7 +255,7 @@ export default (props) => {
               />{' '}
               {Setting.Translate('wind')}
             </Text>
-            <Text style={{color: 'white'}}>
+            <Text style={{color: 'white', fontFamily: 'IRANSansMobile'}}>
               <Wind degree={data.wind_deg} size={14} />
               {' ' +
                 (setting.language === 'fa'
@@ -265,7 +270,7 @@ export default (props) => {
               flexDirection: 'row',
               justifyContent: 'space-between',
             }}>
-            <Text style={{color: 'white'}}>
+            <Text style={{color: 'white', fontFamily: 'IRANSansMobile'}}>
               <MaterialCommunityIcons
                 name="coolant-temperature"
                 size={14}
@@ -273,7 +278,7 @@ export default (props) => {
               />{' '}
               {Setting.Translate('pressure')}
             </Text>
-            <Text style={{color: 'white'}}>
+            <Text style={{color: 'white', fontFamily: 'IRANSansMobile'}}>
               {(setting.language === 'fa'
                 ? Localize.toPersianString(data.pressure.toString())
                 : data.pressure) + ' hPa'}
@@ -284,11 +289,11 @@ export default (props) => {
               flexDirection: 'row',
               justifyContent: 'space-between',
             }}>
-            <Text style={{color: 'white'}}>
+            <Text style={{color: 'white', fontFamily: 'IRANSansMobile'}}>
               <MaterialCommunityIcons name="eye" size={14} color="white" />{' '}
               {Setting.Translate('visibility')}
             </Text>
-            <Text style={{color: 'white'}}>
+            <Text style={{color: 'white', fontFamily: 'IRANSansMobile'}}>
               {(setting.language === 'fa'
                 ? Localize.toPersianString(data.visibility.toString())
                 : data.visibility) + ' m'}
@@ -299,7 +304,7 @@ export default (props) => {
               flexDirection: 'row',
               justifyContent: 'space-between',
             }}>
-            <Text style={{color: 'white'}}>
+            <Text style={{color: 'white', fontFamily: 'IRANSansMobile'}}>
               <MaterialCommunityIcons
                 name="weather-sunny-alert"
                 size={14}
@@ -307,7 +312,7 @@ export default (props) => {
               />{' '}
               {Setting.Translate('uvIndex')}
             </Text>
-            <Text style={{color: 'white'}}>
+            <Text style={{color: 'white', fontFamily: 'IRANSansMobile'}}>
               {setting.language === 'fa'
                 ? Localize.toPersianString(data.uvi.toString())
                 : data.uvi}
